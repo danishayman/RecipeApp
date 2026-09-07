@@ -4,6 +4,7 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, View } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/app-button';
+import { AppErrorBoundary } from '@/components/app-error-boundary';
 import { EmptyState } from '@/components/empty-state';
 import { RecipeForm } from '@/components/recipe-form';
 import { RecipeImage } from '@/components/recipe-image';
@@ -16,6 +17,9 @@ import { useLayout } from '@/hooks/use-layout';
 import { useTheme } from '@/hooks/use-theme';
 import { useRecipes } from '@/state/recipes-provider';
 import type { Recipe, RecipeDraft } from '@/types/recipe';
+
+/** Recovers this screen alone, leaving the listing beneath it intact. */
+export { AppErrorBoundary as ErrorBoundary };
 
 /**
  * Recipe detail screen.

@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, useColorScheme } from 'react-native';
 
+import { AppErrorBoundary } from '@/components/app-error-boundary';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Radii, Spacing } from '@/constants/theme';
 import { RecipesProvider } from '@/state/recipes-provider';
@@ -11,6 +12,12 @@ import { RecipesProvider } from '@/state/recipes-provider';
 // Hold the splash screen until the first screen has mounted so the user never
 // sees a blank frame. Failures here are non-fatal (the splash auto-hides).
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
+
+/**
+ * Catches render errors anywhere below the root layout, so a single bad
+ * record shows a recoverable screen instead of a white screen of death.
+ */
+export { AppErrorBoundary as ErrorBoundary };
 
 /**
  * Root navigator. A single native stack drives the whole app:
