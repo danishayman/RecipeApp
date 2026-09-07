@@ -1,26 +1,64 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Radii, Spacing } from '@/constants/theme';
-import { RECIPE_TYPES, SAMPLE_RECIPES, recipeTypeLabel } from '@/data/recipe-catalog';
+import { recipeTypeLabel } from '@/data/recipe-catalog';
+import { recipeRepository } from '@/storage/recipe-repository';
+import type { Recipe } from '@/types/recipe';
 
 /**
  * Recipe listing screen.
  *
- * Currently renders the bundled catalog directly. Storage-backed loading and
- * the type filter arrive in later phases.
+ * Reads from device storage, which seeds itself with the bundled samples on
+ * first launch. The card layout and type filter arrive in the listing phase.
  */
 export default function RecipeListScreen() {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      setRecipes(await recipeRepository.loadAll());
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Something went wrong.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  if (isLoading) {
+    return (
+      <ThemedView style={styles.centered}>
+        <ActivityIndicator />
+      </ThemedView>
+    );
+  }
+
+  if (error !== null) {
+    return (
+      <ThemedView style={styles.centered}>
+        <ThemedText themeColor="danger">{error}</ThemedText>
+      </ThemedView>
+    );
+  }
+
   return (
     <ThemedView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedText type="subtitle">Recipes</ThemedText>
-        <ThemedText themeColor="textSecondary">
-          {RECIPE_TYPES.length} types · {SAMPLE_RECIPES.length} sample recipes
-        </ThemedText>
+        <ThemedText themeColor="textSecondary">{recipes.length} stored on this device</ThemedText>
 
-        {SAMPLE_RECIPES.map((recipe) => (
+        {recipes.map((recipe) => (
           <ThemedView key={recipe.id} type="backgroundElement" style={styles.card}>
             <ThemedText type="smallBold">{recipe.title}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -37,6 +75,12 @@ export default function RecipeListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.four,
   },
   content: {
     width: '100%',
