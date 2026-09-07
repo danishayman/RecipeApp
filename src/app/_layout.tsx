@@ -1,10 +1,11 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { Pressable, StyleSheet, useColorScheme } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { ThemedText } from '@/components/themed-text';
+import { Colors, Radii, Spacing } from '@/constants/theme';
 import { RecipesProvider } from '@/state/recipes-provider';
 
 // Hold the splash screen until the first screen has mounted so the user never
@@ -34,9 +35,45 @@ export default function RootLayout() {
             headerTitleStyle: { color: palette.text },
             contentStyle: { backgroundColor: palette.background },
           }}>
-          <Stack.Screen name="index" options={{ title: 'Recipes' }} />
+          <Stack.Screen
+            name="index"
+            options={{ title: 'Recipes', headerRight: () => <AddRecipeAction /> }}
+          />
+          <Stack.Screen name="add" options={{ title: 'New recipe' }} />
         </Stack>
       </RecipesProvider>
     </ThemeProvider>
   );
 }
+
+/** Header action on the listing screen that opens the add form. */
+function AddRecipeAction() {
+  const router = useRouter();
+  const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+  const palette = Colors[scheme];
+
+  return (
+    <Pressable
+      onPress={() => router.push('/add')}
+      accessibilityRole="button"
+      accessibilityLabel="Add a recipe"
+      accessibilityHint="Opens the form for a new recipe"
+      hitSlop={Spacing.two}
+      style={({ pressed }) => [
+        styles.headerAction,
+        { backgroundColor: palette.accent, opacity: pressed ? 0.8 : 1 },
+      ]}>
+      <ThemedText type="smallBold" style={{ color: palette.onAccent }}>
+        + Add
+      </ThemedText>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  headerAction: {
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
+    borderRadius: Radii.pill,
+  },
+});

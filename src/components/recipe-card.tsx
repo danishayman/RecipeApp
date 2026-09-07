@@ -49,17 +49,24 @@ export function RecipeCard({ recipe, onPress }: RecipeCardProps) {
           </ThemedText>
         </View>
 
-        <ThemedText type="small" themeColor="textSecondary" numberOfLines={2}>
-          {recipe.description}
-        </ThemedText>
+        {recipe.description.length > 0 ? (
+          <ThemedText type="small" themeColor="textSecondary" numberOfLines={2}>
+            {recipe.description}
+          </ThemedText>
+        ) : null}
 
         <ThemedText type="small" themeColor="textSecondary">
-          {recipe.prepMinutes} min · serves {recipe.servings} · {recipe.ingredients.length}{' '}
-          ingredients
+          {recipe.prepMinutes} min · serves {recipe.servings} · {ingredientCount(recipe)}
         </ThemedText>
       </View>
     </Pressable>
   );
+}
+
+/** Pluralised ingredient count, so a one-item recipe does not read "1 ingredients". */
+function ingredientCount(recipe: Recipe): string {
+  const count = recipe.ingredients.length;
+  return `${count} ${count === 1 ? 'ingredient' : 'ingredients'}`;
 }
 
 const styles = StyleSheet.create({
