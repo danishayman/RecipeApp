@@ -1,6 +1,9 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Design tokens for the Recipe app.
+ *
+ * Every colour is declared for both light and dark schemes so that
+ * `useTheme()` can return a single palette object for the active scheme.
+ * Components should never hardcode a colour literal - always read it from here.
  */
 
 import '@/global.css';
@@ -9,22 +12,33 @@ import { Platform } from 'react-native';
 
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    text: '#11181C',
+    textSecondary: '#5A6570',
+    background: '#FFFFFF',
+    backgroundElement: '#F4F6F8',
+    backgroundSelected: '#E4E8EC',
+    border: '#E1E5EA',
+    accent: '#E8590C',
+    onAccent: '#FFFFFF',
+    danger: '#D93025',
+    onDanger: '#FFFFFF',
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    text: '#ECEDEE',
+    textSecondary: '#9BA1A6',
+    background: '#0E1113',
+    backgroundElement: '#1A1D1F',
+    backgroundSelected: '#25292C',
+    border: '#2A2F33',
+    accent: '#FF8A3D',
+    onAccent: '#241004',
+    danger: '#FF6B6B',
+    onDanger: '#2B0A0A',
   },
 } as const;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export type ThemePalette = (typeof Colors)['light'];
 
 export const Fonts = Platform.select({
   ios: {
@@ -51,6 +65,7 @@ export const Fonts = Platform.select({
   },
 });
 
+/** 4pt spacing scale. Use these instead of raw pixel values. */
 export const Spacing = {
   half: 2,
   one: 4,
@@ -61,5 +76,13 @@ export const Spacing = {
   six: 64,
 } as const;
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+/** Corner radii scale. */
+export const Radii = {
+  small: 8,
+  medium: 12,
+  large: 20,
+  pill: 999,
+} as const;
+
+/** Caps line length on tablets and landscape phones so text stays readable. */
+export const MaxContentWidth = 900;

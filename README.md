@@ -1,56 +1,59 @@
-# Welcome to your Expo app 👋
+# RecipeApp
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native recipe manager built with Expo SDK 57 and TypeScript.
 
-## Get started
+Browse a collection of recipes, filter them by type, add your own with a photo,
+ingredients and steps, then edit or delete them. Everything is stored on-device
+and survives an app restart.
 
-1. Install dependencies
+> Status: in progress. Full setup notes, screenshots and a feature walkthrough
+> land with the final documentation pass.
+
+## Requirements
+
+- Node.js 20 or newer
+- An Android emulator (Android Studio) or iOS simulator (Xcode, macOS only),
+  or the [Expo Go](https://expo.dev/go) app on a physical device
+
+## Getting started
+
+1. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. Start the dev server:
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+3. Press `a` to open the Android emulator or `i` for the iOS simulator, or scan
+   the QR code with Expo Go.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Scripts
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+| Script | Purpose |
+| --- | --- |
+| `npm start` | Start the Metro dev server |
+| `npm run android` | Start and open on Android |
+| `npm run ios` | Start and open on iOS |
+| `npm run web` | Start and open in a browser |
+| `npm run lint` | Lint the project |
 
-## Get a fresh project
+## Project layout
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+src/
+  app/          Expo Router routes (file-based navigation)
+  components/   Reusable presentational components
+  constants/    Design tokens (colours, spacing, radii)
+  hooks/        Reusable stateful logic
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Tech stack
 
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **Expo SDK 57** / React Native 0.86 / React 19
+- **TypeScript** in strict mode
+- **Expo Router** for file-based stack navigation

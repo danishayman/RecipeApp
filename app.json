@@ -3,12 +3,13 @@
     "name": "RecipeApp",
     "slug": "RecipeApp",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "recipeapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +32,13 @@
           "backgroundColor": "#208AEF",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow RecipeApp to access your photos so you can add a picture to a recipe.",
+          "cameraPermission": "Allow RecipeApp to use your camera so you can photograph a recipe."
         }
       ]
     ],
