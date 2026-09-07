@@ -86,3 +86,6 @@ export const Radii = {
 
 /** Caps line length on tablets and landscape phones so text stays readable. */
 export const MaxContentWidth = 900;
+
+/** Wider cap for the card grid, which tolerates more width than prose does. */
+export const MaxGridWidth = 1200;

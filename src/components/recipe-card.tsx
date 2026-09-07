@@ -7,15 +7,24 @@ import { recipeTypeLabel } from '@/data/recipe-catalog';
 import { useTheme } from '@/hooks/use-theme';
 import type { Recipe } from '@/types/recipe';
 
+/**
+ * `row` places the thumbnail beside the text and suits a single column on a
+ * phone. `tile` stacks a wide photo above the text and suits a grid on a
+ * tablet or a landscape phone.
+ */
+export type RecipeCardLayout = 'row' | 'tile';
+
 interface RecipeCardProps {
   recipe: Recipe;
   /** Opens the detail screen. Omitted while the card is non-interactive. */
   onPress?: () => void;
+  layout?: RecipeCardLayout;
 }
 
-/** Summary row for one recipe in the listing. */
-export function RecipeCard({ recipe, onPress }: RecipeCardProps) {
+/** Summary of one recipe in the listing. */
+export function RecipeCard({ recipe, onPress, layout = 'row' }: RecipeCardProps) {
   const theme = useTheme();
+  const isTile = layout === 'tile';
 
   return (
     <Pressable
@@ -26,6 +35,7 @@ export function RecipeCard({ recipe, onPress }: RecipeCardProps) {
       accessibilityHint={onPress === undefined ? undefined : 'Opens the full recipe'}
       style={({ pressed }) => [
         styles.card,
+        isTile ? styles.cardTile : styles.cardRow,
         {
           backgroundColor: pressed ? theme.backgroundSelected : theme.backgroundElement,
           borderColor: theme.border,
@@ -34,8 +44,8 @@ export function RecipeCard({ recipe, onPress }: RecipeCardProps) {
       <RecipeImage
         uri={recipe.imageUri}
         typeId={recipe.typeId}
-        emojiSize={34}
-        style={styles.thumbnail}
+        emojiSize={isTile ? 48 : 34}
+        style={isTile ? styles.cover : styles.thumbnail}
       />
 
       <View style={styles.body}>
@@ -71,15 +81,28 @@ function ingredientCount(recipe: Recipe): string {
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
-    gap: Spacing.three,
-    padding: Spacing.two,
     borderRadius: Radii.medium,
     borderWidth: StyleSheet.hairlineWidth,
+    padding: Spacing.two,
+    gap: Spacing.three,
+  },
+  cardRow: {
+    flexDirection: 'row',
+  },
+  cardTile: {
+    flexDirection: 'column',
   },
   thumbnail: {
     width: 92,
     height: 92,
+    borderRadius: Radii.small,
+  },
+  cover: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    // Without a ceiling, a wide tile on a landscape phone grows tall enough
+    // to push the title off screen.
+    maxHeight: 180,
     borderRadius: Radii.small,
   },
   body: {

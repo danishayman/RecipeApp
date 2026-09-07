@@ -1,6 +1,7 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
@@ -11,6 +12,7 @@ import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Radii, Spacing } from '@/constants/theme';
 import { recipeTypeLabel } from '@/data/recipe-catalog';
 import { formValuesFrom } from '@/data/recipe-form';
+import { useLayout } from '@/hooks/use-layout';
 import { useTheme } from '@/hooks/use-theme';
 import { useRecipes } from '@/state/recipes-provider';
 import type { Recipe, RecipeDraft } from '@/types/recipe';
@@ -111,60 +113,79 @@ interface RecipeDetailViewProps {
   onDelete: () => void;
 }
 
-/** Read-only presentation of a recipe. */
+/**
+ * Read-only presentation of a recipe.
+ *
+ * On a wide landscape window the photo sits beside the text rather than above
+ * it, so the method is readable without scrolling past a full-width image.
+ */
 function RecipeDetailView({ recipe, onEdit, onDelete }: RecipeDetailViewProps) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const { isWide, isLandscape } = useLayout();
+  const isSplit = isWide && isLandscape;
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
-      <RecipeImage
-        uri={recipe.imageUri}
-        typeId={recipe.typeId}
-        emojiSize={72}
-        style={styles.hero}
-        accessibilityLabel={`Photo of ${recipe.title}`}
-      />
-
-      <View style={styles.headingBlock}>
-        <ThemedText type="subtitle">{recipe.title}</ThemedText>
-
-        <View style={styles.metaRow}>
-          <View style={[styles.chip, { backgroundColor: theme.backgroundSelected }]}>
-            <ThemedText type="small" themeColor="textSecondary">
-              {recipeTypeLabel(recipe.typeId)}
-            </ThemedText>
-          </View>
-          <ThemedText type="small" themeColor="textSecondary">
-            {recipe.prepMinutes} min · serves {recipe.servings}
-          </ThemedText>
+    <ScrollView
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: insets.bottom + Spacing.four },
+        isSplit && styles.contentWide,
+      ]}>
+      <View style={isSplit ? styles.split : styles.stack}>
+        <View style={isSplit ? styles.splitMedia : undefined}>
+          <RecipeImage
+            uri={recipe.imageUri}
+            typeId={recipe.typeId}
+            emojiSize={72}
+            style={styles.hero}
+            accessibilityLabel={`Photo of ${recipe.title}`}
+          />
         </View>
 
-        {recipe.description.length > 0 ? (
-          <ThemedText themeColor="textSecondary">{recipe.description}</ThemedText>
-        ) : null}
-      </View>
+        <View style={[styles.stack, isSplit && styles.splitText]}>
+          <View style={styles.headingBlock}>
+            <ThemedText type="subtitle">{recipe.title}</ThemedText>
 
-      <DetailSection title="Ingredients">
-        {recipe.ingredients.map((ingredient, index) => (
-          <View key={`${index}-${ingredient}`} style={styles.listRow}>
-            <ThemedText themeColor="textSecondary">•</ThemedText>
-            <ThemedText style={styles.growingText}>{ingredient}</ThemedText>
-          </View>
-        ))}
-      </DetailSection>
-
-      <DetailSection title="Method">
-        {recipe.steps.map((step, index) => (
-          <View key={`${index}-${step}`} style={styles.listRow}>
-            <View style={[styles.ordinal, { backgroundColor: theme.backgroundSelected }]}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
-                {index + 1}
+            <View style={styles.metaRow}>
+              <View style={[styles.chip, { backgroundColor: theme.backgroundSelected }]}>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {recipeTypeLabel(recipe.typeId)}
+                </ThemedText>
+              </View>
+              <ThemedText type="small" themeColor="textSecondary">
+                {recipe.prepMinutes} min · serves {recipe.servings}
               </ThemedText>
             </View>
-            <ThemedText style={styles.growingText}>{step}</ThemedText>
+
+            {recipe.description.length > 0 ? (
+              <ThemedText themeColor="textSecondary">{recipe.description}</ThemedText>
+            ) : null}
           </View>
-        ))}
-      </DetailSection>
+
+          <DetailSection title="Ingredients">
+            {recipe.ingredients.map((ingredient, index) => (
+              <View key={`${index}-${ingredient}`} style={styles.listRow}>
+                <ThemedText themeColor="textSecondary">•</ThemedText>
+                <ThemedText style={styles.growingText}>{ingredient}</ThemedText>
+              </View>
+            ))}
+          </DetailSection>
+
+          <DetailSection title="Method">
+            {recipe.steps.map((step, index) => (
+              <View key={`${index}-${step}`} style={styles.listRow}>
+                <View style={[styles.ordinal, { backgroundColor: theme.backgroundSelected }]}>
+                  <ThemedText type="smallBold" themeColor="textSecondary">
+                    {index + 1}
+                  </ThemedText>
+                </View>
+                <ThemedText style={styles.growingText}>{step}</ThemedText>
+              </View>
+            ))}
+          </DetailSection>
+        </View>
+      </View>
 
       <View style={styles.actions}>
         <AppButton
@@ -211,8 +232,24 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
     alignSelf: 'center',
     padding: Spacing.three,
-    paddingBottom: Spacing.six,
     gap: Spacing.four,
+  },
+  contentWide: {
+    maxWidth: MaxContentWidth + 200,
+  },
+  stack: {
+    gap: Spacing.four,
+    flex: 1,
+  },
+  split: {
+    flexDirection: 'row',
+    gap: Spacing.four,
+  },
+  splitMedia: {
+    flex: 2,
+  },
+  splitText: {
+    flex: 3,
   },
   hero: {
     width: '100%',
@@ -261,6 +298,5 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     gap: Spacing.three,
-    paddingTop: Spacing.two,
   },
 });

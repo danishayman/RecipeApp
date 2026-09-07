@@ -1,15 +1,17 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
 import { RecipeCard } from '@/components/recipe-card';
 import { RecipeTypePicker } from '@/components/recipe-type-picker';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Radii, Spacing } from '@/constants/theme';
+import { MaxGridWidth, Spacing } from '@/constants/theme';
 import { recipeTypeLabel } from '@/data/recipe-catalog';
-import { useTheme } from '@/hooks/use-theme';
+import { useLayout } from '@/hooks/use-layout';
 import { useRecipes } from '@/state/recipes-provider';
 import { ALL_TYPES, type Recipe } from '@/types/recipe';
 
@@ -18,17 +20,20 @@ import { ALL_TYPES, type Recipe } from '@/types/recipe';
  *
  * Shows every stored recipe, narrowed by the category spinner. The filter is
  * screen-local state; the collection itself lives in `RecipesProvider`.
+ *
+ * The list lays out as a single column of row cards on a phone and as a grid
+ * of tile cards from tablet width upwards, in either orientation.
  */
 export default function RecipeListScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { columns, prefersTiles } = useLayout();
   const { recipes, status, error, reload } = useRecipes();
   const [typeFilter, setTypeFilter] = useState<string>(ALL_TYPES);
 
   const visibleRecipes = useMemo<Recipe[]>(
     () =>
-      typeFilter === ALL_TYPES
-        ? recipes
-        : recipes.filter((recipe) => recipe.typeId === typeFilter),
+      typeFilter === ALL_TYPES ? recipes : recipes.filter((recipe) => recipe.typeId === typeFilter),
     [recipes, typeFilter]
   );
 
@@ -50,24 +55,40 @@ export default function RecipeListScreen() {
           emoji="⚠️"
           title="We could not open your recipes"
           message={error ?? 'Something went wrong.'}
-          action={<RetryButton onPress={() => void reload()} />}
+          action={<AppButton label="Try again" onPress={() => void reload()} />}
         />
       </ThemedView>
     );
   }
 
+  const isGrid = columns > 1;
+
   return (
     <ThemedView style={styles.container}>
       <FlatList
+        // FlatList cannot change column count in place, so the key forces a
+        // fresh list when the device rotates into or out of the grid.
+        key={`columns-${columns}`}
         data={visibleRecipes}
         keyExtractor={(recipe) => recipe.id}
+        numColumns={columns}
+        columnWrapperStyle={isGrid ? styles.columnWrapper : undefined}
         renderItem={({ item }) => (
-          <RecipeCard
-            recipe={item}
-            onPress={() => router.push({ pathname: '/recipe/[id]', params: { id: item.id } })}
-          />
+          // In a grid the cell divides the row evenly; in a single column the
+          // card sizes itself and must not stretch to fill the viewport.
+          <View style={isGrid ? styles.gridCell : undefined}>
+            <RecipeCard
+              recipe={item}
+              layout={prefersTiles ? 'tile' : 'row'}
+              onPress={() => router.push({ pathname: '/recipe/[id]', params: { id: item.id } })}
+            />
+          </View>
         )}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          // Keep the last card clear of the home indicator or navigation bar.
+          { paddingBottom: insets.bottom + Spacing.four },
+        ]}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListHeaderComponent={
           <View style={styles.header}>
@@ -91,9 +112,10 @@ export default function RecipeListScreen() {
             }
             message={
               typeFilter === ALL_TYPES
-                ? 'Add your first recipe to get started.'
+                ? 'Tap Add to write your first recipe.'
                 : 'Try another category, or add a recipe to this one.'
             }
+            action={<AppButton label="Add a recipe" onPress={() => router.push('/add')} />}
           />
         }
       />
@@ -110,24 +132,6 @@ function describeCount(count: number, typeFilter: string): string {
     : `${count} ${noun} in ${recipeTypeLabel(typeFilter)}`;
 }
 
-function RetryButton({ onPress }: { onPress: () => void }) {
-  const theme = useTheme();
-
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      style={({ pressed }) => [
-        styles.retry,
-        { backgroundColor: theme.accent, opacity: pressed ? 0.8 : 1 },
-      ]}>
-      <ThemedText type="smallBold" style={{ color: theme.onAccent }}>
-        Try again
-      </ThemedText>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -141,22 +145,22 @@ const styles = StyleSheet.create({
   },
   listContent: {
     width: '100%',
-    maxWidth: MaxContentWidth,
+    maxWidth: MaxGridWidth,
     alignSelf: 'center',
     padding: Spacing.three,
-    paddingBottom: Spacing.six,
   },
   header: {
     gap: Spacing.two,
     paddingBottom: Spacing.three,
   },
-  separator: {
-    height: Spacing.two,
+  columnWrapper: {
+    gap: Spacing.three,
+    alignItems: 'stretch',
   },
-  retry: {
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    borderRadius: Radii.pill,
-    marginTop: Spacing.two,
+  gridCell: {
+    flex: 1,
+  },
+  separator: {
+    height: Spacing.three,
   },
 });

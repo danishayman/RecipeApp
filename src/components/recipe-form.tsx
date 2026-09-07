@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/app-button';
 import { DynamicListField } from '@/components/dynamic-list-field';
@@ -32,6 +33,7 @@ interface RecipeFormProps {
  * fields they have not reached yet but does see errors clear as they fix them.
  */
 export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: RecipeFormProps) {
+  const insets = useSafeAreaInsets();
   const [values, setValues] = useState<RecipeFormValues>(initialValues);
   const [errors, setErrors] = useState<RecipeFormErrors>({});
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -81,7 +83,11 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          // Keep the action row clear of the home indicator or navigation bar.
+          { paddingBottom: insets.bottom + Spacing.four },
+        ]}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag">
         <TextField
@@ -179,7 +185,6 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
     alignSelf: 'center',
     padding: Spacing.three,
-    paddingBottom: Spacing.six,
     gap: Spacing.four,
   },
   row: {
