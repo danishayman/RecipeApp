@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "types": [
+    {
+      "id": "breakfast",
+      "label": "Breakfast",
+      "emoji": "🍳",
+      "description": "Ways to start the day, from quick eggs to weekend bakes."
+    },
+    {
+      "id": "appetizer",
+      "label": "Appetizer",
+      "emoji": "🥑",
+      "description": "Small plates and dips to open a meal."
+    },
+    {
+      "id": "soup",
+      "label": "Soup",
+      "emoji": "🍲",
+      "description": "Broths, bisques and everything served in a bowl."
+    },
+    {
+      "id": "salad",
+      "label": "Salad",
+      "emoji": "🥗",
+      "description": "Crisp, fresh dishes served cold or barely warm."
+    },
+    {
+      "id": "main-course",
+      "label": "Main Course",
+      "emoji": "🍝",
+      "description": "The centrepiece of the meal."
+    },
+    {
+      "id": "side-dish",
+      "label": "Side Dish",
+      "emoji": "🥔",
+      "description": "Companions that round out a plate."
+    },
+    {
+      "id": "dessert",
+      "label": "Dessert",
+      "emoji": "🍰",
+      "description": "Sweet endings, baked or chilled."
+    },
+    {
+      "id": "beverage",
+      "label": "Beverage",
+      "emoji": "🥤",
+      "description": "Drinks, hot and cold."
+    }
+  ]
+}

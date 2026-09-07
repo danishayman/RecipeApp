@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "recipes": [
+    {
+      "id": "seed-carbonara",
+      "title": "Spaghetti alla Carbonara",
+      "typeId": "main-course",
+      "description": "The Roman classic: eggs, cured pork and pecorino emulsified into a glossy sauce. No cream, ever.",
+      "imageUri": "https://commons.wikimedia.org/wiki/Special:FilePath/Spaghetti_alla_Carbonara.jpg?width=800",
+      "servings": 4,
+      "prepMinutes": 25,
+      "ingredients": [
+        "400 g spaghetti",
+        "150 g guanciale, cut into short batons",
+        "3 whole eggs plus 1 extra yolk",
+        "60 g pecorino romano, finely grated",
+        "Freshly cracked black pepper",
+        "Coarse salt for the pasta water"
+      ],
+      "steps": [
+        "Bring a large pot of well-salted water to the boil and drop in the spaghetti.",
+        "Render the guanciale in a cold, dry pan over medium heat until the fat runs clear and the edges crisp, about 8 minutes.",
+        "Whisk the eggs, yolk, pecorino and a heavy grind of black pepper into a thick paste.",
+        "Reserve a mug of pasta water, then drain the spaghetti one minute short of the packet time.",
+        "Toss the pasta through the guanciale off the heat, then stir in the egg mixture, loosening with pasta water until the sauce coats every strand.",
+        "Serve immediately with extra pecorino and pepper."
+      ],
+      "createdAt": "2024-08-01T09:00:00.000Z",
+      "updatedAt": "2024-08-01T09:00:00.000Z"
+    },
+    {
+      "id": "seed-pancakes",
+      "title": "Buttermilk Pancakes",
+      "typeId": "breakfast",
+      "description": "Tall, tangy pancakes with a tender crumb. The batter wants to rest before it hits the pan.",
+      "imageUri": "https://commons.wikimedia.org/wiki/Special:FilePath/Pancakes_%281%29.jpg?width=800",
+      "servings": 4,
+      "prepMinutes": 30,
+      "ingredients": [
+        "250 g plain flour",
+        "2 tbsp caster sugar",
+        "2 tsp baking powder",
+        "Half a tsp bicarbonate of soda",
+        "Half a tsp fine salt",
+        "400 ml buttermilk",
+        "2 eggs",
+        "50 g butter, melted, plus more for the pan"
+      ],
+      "steps": [
+        "Whisk the flour, sugar, baking powder, bicarbonate of soda and salt together in a large bowl.",
+        "In a second bowl beat the buttermilk, eggs and melted butter until smooth.",
+        "Fold the wet into the dry with a few strokes only - lumps are fine, overmixing is not.",
+        "Rest the batter for 10 minutes while a heavy pan heats over medium-low.",
+        "Butter the pan and ladle in the batter. Flip when the surface bubbles and the edges look set, roughly 2 minutes.",
+        "Cook a further minute and keep warm in a low oven while you finish the batch."
+      ],
+      "createdAt": "2024-08-01T09:05:00.000Z",
+      "updatedAt": "2024-08-01T09:05:00.000Z"
+    },
+    {
+      "id": "seed-tomato-soup",
+      "title": "Roasted Tomato Soup",
+      "typeId": "soup",
+      "description": "Roasting concentrates the tomatoes before they ever meet the blender, so the soup tastes of far more than its six ingredients.",
+      "imageUri": "https://commons.wikimedia.org/wiki/Special:FilePath/Tomato_soup.jpg?width=800",
+      "servings": 4,
+      "prepMinutes": 60,
+      "ingredients": [
+        "1.2 kg ripe tomatoes, halved",
+        "1 onion, cut into wedges",
+        "4 garlic cloves, unpeeled",
+        "3 tbsp olive oil",
+        "500 ml vegetable stock",
+        "A small handful of basil",
+        "Salt and black pepper"
+      ],
+      "steps": [
+        "Heat the oven to 200 C. Spread the tomatoes, onion and garlic on a large tray.",
+        "Coat with the olive oil, season generously and roast for 40 minutes until the edges char.",
+        "Squeeze the garlic out of its skins and tip everything, including the tray juices, into a saucepan.",
+        "Add the stock, bring to a simmer and cook for 10 minutes.",
+        "Blend until smooth, then stir the basil through and adjust the seasoning.",
+        "Loosen with a little more stock if the soup is thicker than you like."
+      ],
+      "createdAt": "2024-08-01T09:10:00.000Z",
+      "updatedAt": "2024-08-01T09:10:00.000Z"
+    },
+    {
+      "id": "seed-caesar-salad",
+      "title": "Classic Caesar Salad",
+      "typeId": "salad",
+      "description": "Cos lettuce, an anchovy-backed dressing and croutons fried in the same pan. Assemble at the last moment.",
+      "imageUri": "https://commons.wikimedia.org/wiki/Special:FilePath/Caesar_salad_%281%29.jpg?width=800",
+      "servings": 2,
+      "prepMinutes": 20,
+      "ingredients": [
+        "2 heads of cos lettuce, leaves separated",
+        "2 thick slices of sourdough, torn into chunks",
+        "4 anchovy fillets in oil",
+        "1 garlic clove",
+        "1 egg yolk",
+        "1 tsp Dijon mustard",
+        "1 tbsp lemon juice",
+        "100 ml light olive oil",
+        "40 g parmesan, shaved"
+      ],
+      "steps": [
+        "Fry the torn sourdough in olive oil over medium heat until golden on all sides, then drain on paper.",
+        "Mash the anchovies and garlic to a paste with the flat of a knife.",
+        "Whisk the paste with the egg yolk, mustard and lemon juice.",
+        "Trickle in the olive oil while whisking constantly until the dressing thickens to double cream.",
+        "Toss the lettuce through the dressing so every leaf is lightly coated.",
+        "Scatter over the croutons and shaved parmesan and serve straight away."
+      ],
+      "createdAt": "2024-08-01T09:15:00.000Z",
+      "updatedAt": "2024-08-01T09:15:00.000Z"
+    },
+    {
+      "id": "seed-brownies",
+      "title": "Fudgy Chocolate Brownies",
+      "typeId": "dessert",
+      "description": "Dense and fudgy rather than cakey. Pull them out while the middle still has a wobble.",
+      "imageUri": "https://commons.wikimedia.org/wiki/Special:FilePath/Chocolate_brownies.jpg?width=800",
+      "servings": 12,
+      "prepMinutes": 45,
+      "ingredients": [
+        "200 g dark chocolate, 70 percent cocoa",
+        "175 g unsalted butter",
+        "300 g caster sugar",
+        "3 eggs",
+        "1 tsp vanilla extract",
+        "100 g plain flour",
+        "30 g cocoa powder",
+        "Half a tsp fine salt"
+      ],
+      "steps": [
+        "Heat the oven to 180 C and line a 20 cm square tin with baking paper.",
+        "Melt the chocolate and butter together over a pan of barely simmering water, then let the mixture cool for 5 minutes.",
+        "Beat the sugar, eggs and vanilla until pale and thickened, about 3 minutes.",
+        "Fold the chocolate mixture in, then sift over the flour, cocoa and salt and fold until just combined.",
+        "Spread into the tin and bake for 25 minutes - the centre should still wobble slightly.",
+        "Cool completely in the tin before cutting into 12 squares."
+      ],
+      "createdAt": "2024-08-01T09:20:00.000Z",
+      "updatedAt": "2024-08-01T09:20:00.000Z"
+    },
+    {
+      "id": "seed-guacamole",
+      "title": "Fresh Guacamole",
+      "typeId": "appetizer",
+      "description": "Chunky rather than smooth, built in the bowl you serve it in. Lime keeps the colour honest.",
+      "imageUri": "https://commons.wikimedia.org/wiki/Special:FilePath/Guacamole_IMGP1303.jpg?width=800",
+      "servings": 4,
+      "prepMinutes": 15,
+      "ingredients": [
+        "3 ripe avocados",
+        "1 lime, juiced",
+        "Half a red onion, finely diced",
+        "1 green chilli, deseeded and minced",
+        "A handful of coriander, chopped",
+        "1 tomato, deseeded and diced",
+        "Sea salt"
+      ],
+      "steps": [
+        "Halve the avocados, scoop the flesh into a bowl and add the lime juice straight away.",
+        "Mash roughly with a fork, leaving plenty of texture.",
+        "Stir through the onion, chilli and coriander.",
+        "Fold in the diced tomato last so it stays intact.",
+        "Season with sea salt, taste, and add more lime if it needs lifting.",
+        "Serve within the hour with warm tortilla chips."
+      ],
+      "createdAt": "2024-08-01T09:25:00.000Z",
+      "updatedAt": "2024-08-01T09:25:00.000Z"
+    }
+  ]
+}
