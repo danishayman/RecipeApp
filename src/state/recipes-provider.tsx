@@ -11,6 +11,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { ReactNode } from 'react';
 
 import { applyDraft, createRecipe } from '@/data/recipe-factory';
+import { deletePhoto } from '@/storage/photo-storage';
 import { recipeRepository } from '@/storage/recipe-repository';
 import type { Recipe, RecipeDraft } from '@/types/recipe';
 
@@ -78,14 +79,25 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
 
       const updated = applyDraft(existing, draft);
       setRecipes(await recipeRepository.update(updated));
+
+      // A replaced photo has no other owner, so remove the orphaned file.
+      if (existing.imageUri !== updated.imageUri) {
+        deletePhoto(existing.imageUri);
+      }
+
       return updated;
     },
     [recipes]
   );
 
-  const deleteRecipe = useCallback(async (recipeId: string) => {
-    setRecipes(await recipeRepository.remove(recipeId));
-  }, []);
+  const deleteRecipe = useCallback(
+    async (recipeId: string) => {
+      const doomed = recipes.find((candidate) => candidate.id === recipeId);
+      setRecipes(await recipeRepository.remove(recipeId));
+      deletePhoto(doomed?.imageUri ?? null);
+    },
+    [recipes]
+  );
 
   const getRecipe = useCallback(
     (recipeId: string) => recipes.find((candidate) => candidate.id === recipeId),

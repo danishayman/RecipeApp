@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 
@@ -19,6 +20,7 @@ import { ALL_TYPES, type Recipe } from '@/types/recipe';
  * screen-local state; the collection itself lives in `RecipesProvider`.
  */
 export default function RecipeListScreen() {
+  const router = useRouter();
   const { recipes, status, error, reload } = useRecipes();
   const [typeFilter, setTypeFilter] = useState<string>(ALL_TYPES);
 
@@ -59,7 +61,12 @@ export default function RecipeListScreen() {
       <FlatList
         data={visibleRecipes}
         keyExtractor={(recipe) => recipe.id}
-        renderItem={({ item }) => <RecipeCard recipe={item} />}
+        renderItem={({ item }) => (
+          <RecipeCard
+            recipe={item}
+            onPress={() => router.push({ pathname: '/recipe/[id]', params: { id: item.id } })}
+          />
+        )}
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListHeaderComponent={

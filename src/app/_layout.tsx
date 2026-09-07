@@ -40,6 +40,7 @@ export default function RootLayout() {
             options={{ title: 'Recipes', headerRight: () => <AddRecipeAction /> }}
           />
           <Stack.Screen name="add" options={{ title: 'New recipe' }} />
+          <Stack.Screen name="recipe/[id]" options={{ title: 'Recipe' }} />
         </Stack>
       </RecipesProvider>
     </ThemeProvider>
