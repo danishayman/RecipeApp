@@ -13,7 +13,12 @@ interface TextFieldProps extends Omit<TextInputProps, 'style' | 'placeholderText
 }
 
 /** A labelled text input with inline validation feedback. */
-export function TextField({ label, error = null, multiline = false, ...inputProps }: TextFieldProps) {
+export function TextField({
+  label,
+  error = null,
+  multiline = false,
+  ...inputProps
+}: TextFieldProps) {
   const theme = useTheme();
   const hasError = error !== null && error.length > 0;
 

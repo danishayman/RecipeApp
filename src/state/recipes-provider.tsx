@@ -46,10 +46,12 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<RecipesStatus>('loading');
   const [error, setError] = useState<string | null>(null);
 
-  const reload = useCallback(async () => {
-    setStatus('loading');
-    setError(null);
-
+  /**
+   * Reads storage and settles the status. Nothing is set before the first
+   * await, so mounting this does not trigger a synchronous cascade of
+   * renders - `status` already starts as `loading`.
+   */
+  const load = useCallback(async () => {
     try {
       setRecipes(await recipeRepository.loadAll());
       setStatus('ready');
@@ -60,8 +62,19 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    void reload();
-  }, [reload]);
+    // Reading device storage is exactly the external-system synchronisation an
+    // effect exists for. The rule cannot see that every setState inside `load`
+    // runs after an await, so none of them fire synchronously from here.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void load();
+  }, [load]);
+
+  /** Retry entry point: shows the spinner again before re-reading storage. */
+  const reload = useCallback(async () => {
+    setStatus('loading');
+    setError(null);
+    await load();
+  }, [load]);
 
   const addRecipe = useCallback(async (draft: RecipeDraft) => {
     const recipe = createRecipe(draft);

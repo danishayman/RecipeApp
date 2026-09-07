@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -36,15 +36,13 @@ export function RecipeImage({
   accessibilityLabel,
 }: RecipeImageProps) {
   const theme = useTheme();
-  const [hasFailed, setHasFailed] = useState(false);
 
-  // A new uri deserves a fresh attempt, otherwise swapping the photo on the
-  // edit screen would keep showing the previous failure.
-  useEffect(() => {
-    setHasFailed(false);
-  }, [uri]);
+  // Remember which uri failed rather than a bare boolean. A new uri then
+  // deserves a fresh attempt for free, where a boolean would have to be reset
+  // in an effect and would keep showing the previous failure until it ran.
+  const [failedUri, setFailedUri] = useState<string | null>(null);
 
-  const showPlaceholder = uri === null || hasFailed;
+  const showPlaceholder = uri === null || failedUri === uri;
 
   return (
     <View
@@ -68,7 +66,7 @@ export function RecipeImage({
           style={StyleSheet.absoluteFill}
           contentFit="cover"
           transition={200}
-          onError={() => setHasFailed(true)}
+          onError={() => setFailedUri(uri)}
         />
       )}
     </View>

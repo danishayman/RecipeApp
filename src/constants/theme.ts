@@ -38,7 +38,13 @@ export const Colors = {
 } as const;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
-export type ThemePalette = (typeof Colors)['light'];
+
+/**
+ * A resolved palette for one appearance. Widened to `string` deliberately:
+ * `as const` above gives each entry a literal type, which would otherwise
+ * make the light and dark palettes mutually unassignable.
+ */
+export type ThemePalette = Readonly<Record<ThemeColor, string>>;
 
 export const Fonts = Platform.select({
   ios: {

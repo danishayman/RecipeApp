@@ -1,14 +1,17 @@
+import { useColorScheme } from 'react-native';
+
+import { Colors, type ThemePalette } from '@/constants/theme';
+
 /**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
+ * The colour palette for the device's current appearance setting.
+ *
+ * `useColorScheme` returns null when the system has not reported a preference
+ * yet, which is treated as light rather than left undefined.
+ *
+ * @see https://docs.expo.dev/guides/color-schemes/
  */
-
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export function useTheme() {
+export function useTheme(): ThemePalette {
   const scheme = useColorScheme();
-  const theme = scheme === 'unspecified' ? 'light' : scheme;
 
-  return Colors[theme];
+  return Colors[scheme === 'dark' ? 'dark' : 'light'];
 }

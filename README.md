@@ -34,13 +34,13 @@ and survives an app restart.
 
 ## Scripts
 
-| Script | Purpose |
-| --- | --- |
-| `npm start` | Start the Metro dev server |
-| `npm run android` | Start and open on Android |
-| `npm run ios` | Start and open on iOS |
-| `npm run web` | Start and open in a browser |
-| `npm run lint` | Lint the project |
+| Script            | Purpose                     |
+| ----------------- | --------------------------- |
+| `npm start`       | Start the Metro dev server  |
+| `npm run android` | Start and open on Android   |
+| `npm run ios`     | Start and open on iOS       |
+| `npm run web`     | Start and open in a browser |
+| `npm run lint`    | Lint the project            |
 
 ## Project layout
 
