@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Radii, Spacing } from '@/constants/theme';
+import { Fonts, Radii, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger';
@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
+    fontFamily: Fonts.sans,
     fontSize: 15,
     lineHeight: 20,
     fontWeight: '600',

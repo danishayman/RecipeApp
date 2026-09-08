@@ -17,7 +17,6 @@ import {
 } from '@/data/auth-form';
 import { useAsyncCallback } from '@/hooks/use-async-callback';
 import { useTheme } from '@/hooks/use-theme';
-import { DEMO_PASSWORD, DEMO_USERNAME } from '@/storage/auth-repository';
 import { useAuth } from '@/state/auth-provider';
 
 /**
@@ -115,7 +114,7 @@ export default function LoginScreen() {
             label="Username"
             value={values.username}
             onChangeText={(next) => setField('username', next)}
-            placeholder={DEMO_USERNAME}
+            placeholder="Your username"
             error={errors.username}
             autoCapitalize="none"
             autoCorrect={false}
@@ -157,17 +156,6 @@ export default function LoginScreen() {
             onPress={switchMode}
             disabled={isPending}
           />
-
-          {isRegistering ? null : (
-            <View style={[styles.hint, { backgroundColor: theme.backgroundElement }]}>
-              <ThemedText type="label" themeColor="textSecondary">
-                Demo account
-              </ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
-                {DEMO_USERNAME} / {DEMO_PASSWORD}
-              </ThemedText>
-            </View>
-          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </ThemedView>
@@ -200,12 +188,5 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
     borderRadius: Radii.medium,
     borderWidth: StyleSheet.hairlineWidth,
-  },
-  hint: {
-    marginTop: Spacing.three,
-    padding: Spacing.three,
-    borderRadius: Radii.medium,
-    gap: Spacing.half,
-    alignItems: 'center',
   },
 });

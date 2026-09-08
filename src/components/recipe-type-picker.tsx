@@ -2,7 +2,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Radii, Spacing } from '@/constants/theme';
+import { Fonts, Radii, Spacing } from '@/constants/theme';
 import { useRecipeTypes } from '@/hooks/use-recipe-types';
 import { useTheme } from '@/hooks/use-theme';
 import { ALL_TYPES } from '@/types/recipe';
@@ -96,5 +96,10 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: '100%',
+    // Matches the search field beside it. Note this styles the closed field
+    // only: the dropdown list is drawn by the Android spinner dialog, which
+    // @react-native-picker/picker exposes no font control over.
+    fontFamily: Fonts.sans,
+    fontSize: 15,
   },
 });
