@@ -8,27 +8,6 @@ on-device and survives an app restart.
 
 Repository: <https://github.com/danishayman/RecipeApp>
 
----
-
-## Screenshots
-
-| Listing with type filter                        | Recipe detail                                    | Add recipe                                        |
-| ----------------------------------------------- | ------------------------------------------------ | ------------------------------------------------- |
-| ![Recipe listing](docs/screenshots/01-list.png) | ![Recipe detail](docs/screenshots/02-detail.png) | ![Add recipe](docs/screenshots/03-add-recipe.png) |
-
-| Empty category                                       | Dark mode                                       |
-| ---------------------------------------------------- | ----------------------------------------------- |
-| ![Empty state](docs/screenshots/04-empty-filter.png) | ![Dark mode](docs/screenshots/07-dark-mode.png) |
-
-Landscape reflows to a two-column grid, and the detail screen puts the photo
-beside the text rather than above it:
-
-![Landscape listing](docs/screenshots/05-landscape-list.png)
-
-![Landscape detail](docs/screenshots/06-landscape-detail.png)
-
----
-
 ## Getting started
 
 ### Requirements
