@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 
+import { recipeMatchesQuery } from '@/data/recipe-search';
 import { useRecipeTypes } from '@/hooks/use-recipe-types';
 import { ALL_TYPES, type Recipe } from '@/types/recipe';
 
@@ -7,47 +8,67 @@ export interface RecipeFilterState {
   /** The selected category id, or the ALL_TYPES sentinel. */
   typeFilter: string;
   setTypeFilter: (typeId: string) => void;
-  /** `recipes` narrowed to the selected category. */
+  /** The free-text search term, exactly as typed. */
+  query: string;
+  setQuery: (query: string) => void;
+  /** True when either the category or the search is narrowing the list. */
+  isNarrowed: boolean;
+  /** True when a search term is active, whatever the category. */
+  hasQuery: boolean;
+  /** `recipes` narrowed by both the category and the search. */
   visibleRecipes: Recipe[];
-  /** Pluralised summary of what is currently shown, e.g. "3 recipes in Soup". */
+  /** Pluralised summary of what is shown, e.g. "3 recipes in Soup". */
   summary: string;
   /** True when nothing matches, so the caller can pick the right empty copy. */
   isEmpty: boolean;
 }
 
 /**
- * Filtering a recipe collection by category.
+ * Narrowing a recipe collection, by category and by free text.
  *
- * The filter is deliberately screen-local state rather than part of the
- * shared provider: it is a view preference, and two screens showing the same
- * collection should be free to narrow it differently.
+ * Both live here rather than on the screen because they are one question -
+ * "which recipes am I looking at?" - and because the list and its summary have
+ * to answer it identically. Deriving both from the same `useMemo` is what stops
+ * the count from disagreeing with the rows beneath it.
  *
- * Both the filtered list and its summary are derived with `useMemo` from the
- * collection and the selection, so they cannot drift from each other the way
- * a separately stored count would.
+ * The state is screen-local rather than in the shared provider: it is a view
+ * preference, and two screens over the same collection should be free to
+ * narrow it differently.
  */
 export function useRecipeFilter(recipes: Recipe[]): RecipeFilterState {
   const { labelFor } = useRecipeTypes();
   const [typeFilter, setTypeFilter] = useState<string>(ALL_TYPES);
+  const [query, setQuery] = useState('');
 
   const visibleRecipes = useMemo<Recipe[]>(
     () =>
-      typeFilter === ALL_TYPES ? recipes : recipes.filter((recipe) => recipe.typeId === typeFilter),
-    [recipes, typeFilter]
+      recipes.filter(
+        (recipe) =>
+          (typeFilter === ALL_TYPES || recipe.typeId === typeFilter) &&
+          recipeMatchesQuery(recipe, query)
+      ),
+    [recipes, typeFilter, query]
   );
+
+  const hasQuery = query.trim().length > 0;
+  const isFiltered = typeFilter !== ALL_TYPES;
 
   const summary = useMemo(() => {
     const count = visibleRecipes.length;
     const noun = count === 1 ? 'recipe' : 'recipes';
+    const scope = isFiltered ? ` in ${labelFor(typeFilter)}` : '';
+    const matching = hasQuery ? ` matching “${query.trim()}”` : '';
 
-    return typeFilter === ALL_TYPES
-      ? `${count} ${noun}`
-      : `${count} ${noun} in ${labelFor(typeFilter)}`;
-  }, [visibleRecipes.length, typeFilter, labelFor]);
+    return `${count} ${noun}${scope}${matching}`;
+  }, [visibleRecipes.length, isFiltered, typeFilter, labelFor, hasQuery, query]);
 
   return {
     typeFilter,
     setTypeFilter,
+    query,
+    setQuery,
+    isNarrowed: isFiltered || hasQuery,
+    hasQuery,
     visibleRecipes,
     summary,
     isEmpty: visibleRecipes.length === 0,

@@ -173,6 +173,23 @@ The direction also proposed a bottom tab bar and a step-by-step cook mode.
 Both were left out deliberately — this pass changes how the app looks, not what
 it does, so every behaviour verified earlier still holds.
 
+### Search
+
+The listing has a free-text search beside the category spinner. A query matches
+against a recipe's title, description, category label, ingredients **and**
+steps, so "lemon" finds the Caesar salad on `1 tbsp lemon juice` even though
+neither its title nor its blurb mentions it.
+
+What counts as a match lives in `data/recipe-search.ts`; the query itself is
+screen-local state in `useRecipeFilter`, alongside the category. Both narrowings
+feed one `useMemo`, which is what keeps the count from ever disagreeing with the
+rows beneath it — the summary reads, for example, "1 recipe in Soup matching
+“lemon”".
+
+The magnifier is drawn from two views rather than the `⌕` character the design
+uses: that glyph is missing from several Android system fonts and would render
+as a blank box.
+
 ### Custom hooks
 
 Behaviour that more than one screen needed lives in a hook rather than in a
@@ -281,7 +298,7 @@ adds are local files and always render.
 | Requirement                                                                         | Where                                                                                                                             |
 | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `recipetypes.json` local file drives a Picker/Spinner                               | `src/data/recipetypes.json` → `recipe-catalog.ts` → `RecipeTypePicker`                                                            |
-| Listing page, filterable by recipe type                                             | `src/app/index.tsx`                                                                                                               |
+| Listing page, filterable by recipe type                                             | `src/app/index.tsx`, plus free-text search                                                                                        |
 | Pre-populated sample recipes complying with `recipetypes.json`                      | `src/data/sample-recipes.json`, validated against the catalog at load                                                             |
 | Add Recipe page: picture, ingredients, steps; updates the list                      | `src/app/add.tsx` + `RecipeForm`, `PhotoField`, `DynamicListField`                                                                |
 | Recipe Detail page: image, ingredients, steps; all fields editable; update + delete | `src/app/recipe/[id].tsx`                                                                                                         |

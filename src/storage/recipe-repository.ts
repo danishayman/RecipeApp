@@ -56,7 +56,7 @@ export class RecipeRepository {
       return this.seed();
     }
 
-    return decodeRecipes(raw);
+    return this.mergeNewBundledRecipes(decodeRecipes(raw));
   }
 
   /**
@@ -97,6 +97,22 @@ export class RecipeRepository {
     const next = current.filter((existing) => existing.id !== recipeId);
     await this.saveAll(next);
     return next;
+  }
+
+  /**
+   * Adds recipes introduced by a later app version without overwriting
+   * anything the user has created, edited or deleted. Stable seed IDs make
+   * this merge idempotent across launches.
+   */
+  private async mergeNewBundledRecipes(stored: Recipe[]): Promise<Recipe[]> {
+    const storedIds = new Set(stored.map((recipe) => recipe.id));
+    const additions = SAMPLE_RECIPES.filter((recipe) => !storedIds.has(recipe.id));
+
+    if (additions.length === 0) return stored;
+
+    const merged = [...additions, ...stored];
+    await this.saveAll(merged);
+    return merged;
   }
 
   /** Restores the bundled sample recipes, discarding anything stored. */

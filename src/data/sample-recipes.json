@@ -171,6 +171,209 @@
       ],
       "createdAt": "2024-08-01T09:25:00.000Z",
       "updatedAt": "2024-08-01T09:25:00.000Z"
+    },
+    {
+      "id": "seed-shakshuka",
+      "title": "Smoky Shakshuka",
+      "typeId": "breakfast",
+      "description": "Eggs baked in a warmly spiced tomato and pepper sauce, finished with herbs and crusty bread.",
+      "imageUri": "https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&w=1200&q=85",
+      "servings": 2,
+      "prepMinutes": 35,
+      "ingredients": [
+        "2 tbsp olive oil",
+        "1 onion, sliced",
+        "1 red pepper, sliced",
+        "2 garlic cloves, minced",
+        "1 tsp ground cumin",
+        "1 tsp smoked paprika",
+        "1 can chopped tomatoes",
+        "4 eggs",
+        "A handful of parsley or coriander",
+        "Salt, pepper and crusty bread"
+      ],
+      "steps": [
+        "Warm the olive oil in a wide lidded pan and cook the onion and pepper with a pinch of salt for 8 minutes.",
+        "Add the garlic, cumin and smoked paprika and cook for 1 minute until fragrant.",
+        "Stir in the tomatoes and simmer uncovered for 10 minutes until thickened.",
+        "Make four wells in the sauce and crack in the eggs.",
+        "Cover and cook for 5 to 8 minutes until the whites are set and the yolks still wobble.",
+        "Scatter over herbs and serve with bread for scooping."
+      ],
+      "createdAt": "2024-08-01T09:30:00.000Z",
+      "updatedAt": "2024-08-01T09:30:00.000Z"
+    },
+    {
+      "id": "seed-hummus",
+      "title": "Silky Lemon Hummus",
+      "typeId": "appetizer",
+      "description": "A smooth, bright chickpea dip with plenty of tahini, lemon and a pool of olive oil.",
+      "imageUri": "https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=1200&q=85",
+      "servings": 6,
+      "prepMinutes": 15,
+      "ingredients": [
+        "1 can chickpeas, drained and rinsed",
+        "100 g tahini",
+        "1 lemon, juiced",
+        "1 garlic clove, grated",
+        "Half a tsp ground cumin",
+        "3 tbsp ice-cold water",
+        "2 tbsp olive oil",
+        "Salt and warm flatbreads to serve"
+      ],
+      "steps": [
+        "Blend the tahini, lemon juice, garlic, cumin and a pinch of salt until smooth.",
+        "Add the chickpeas and blend, scraping down the sides as needed.",
+        "With the motor running, add the cold water a spoonful at a time until the hummus is pale and silky.",
+        "Taste and adjust with more lemon or salt.",
+        "Spoon into a shallow bowl, make a well in the centre and finish with olive oil.",
+        "Serve with warm flatbreads or crisp vegetables."
+      ],
+      "createdAt": "2024-08-01T09:35:00.000Z",
+      "updatedAt": "2024-08-01T09:35:00.000Z"
+    },
+    {
+      "id": "seed-lentil-soup",
+      "title": "Herby Lentil Soup",
+      "typeId": "soup",
+      "description": "A satisfying one-pot soup of green lentils, vegetables and lemon, made for weekday lunches.",
+      "imageUri": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85",
+      "servings": 4,
+      "prepMinutes": 50,
+      "ingredients": [
+        "2 tbsp olive oil",
+        "1 onion, diced",
+        "2 carrots, diced",
+        "2 celery sticks, diced",
+        "2 garlic cloves, minced",
+        "250 g green or brown lentils",
+        "1.2 litres vegetable stock",
+        "2 bay leaves",
+        "1 lemon, zested and juiced",
+        "A handful of parsley, chopped"
+      ],
+      "steps": [
+        "Cook the onion, carrots and celery in the olive oil with a pinch of salt for 10 minutes.",
+        "Add the garlic and lentils and stir for 1 minute.",
+        "Pour in the stock, add the bay leaves and bring to a boil.",
+        "Lower to a simmer and cook for 30 minutes until the lentils are tender.",
+        "Remove the bay leaves and season with lemon zest, juice, salt and pepper.",
+        "Serve with parsley and a drizzle of olive oil."
+      ],
+      "createdAt": "2024-08-01T09:40:00.000Z",
+      "updatedAt": "2024-08-01T09:40:00.000Z"
+    },
+    {
+      "id": "seed-salmon-bowl",
+      "title": "Miso Salmon Rice Bowl",
+      "typeId": "main-course",
+      "description": "Glazed salmon, steamed rice and crunchy cucumber brought together with a quick miso dressing.",
+      "imageUri": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85",
+      "servings": 2,
+      "prepMinutes": 35,
+      "ingredients": [
+        "2 salmon fillets",
+        "2 tbsp white miso",
+        "1 tbsp soy sauce",
+        "1 tbsp honey",
+        "1 tsp sesame oil",
+        "250 g cooked rice",
+        "Half a cucumber, thinly sliced",
+        "2 spring onions, sliced",
+        "Sesame seeds and lime wedges"
+      ],
+      "steps": [
+        "Heat the oven to 200 C and line a tray with baking paper.",
+        "Mix the miso, soy sauce, honey and sesame oil, then brush it over the salmon.",
+        "Roast for 12 to 15 minutes until the salmon flakes easily and the glaze is caramelised.",
+        "Warm the rice and divide it between two bowls.",
+        "Top with cucumber, salmon and spring onions.",
+        "Finish with sesame seeds and lime."
+      ],
+      "createdAt": "2024-08-01T09:45:00.000Z",
+      "updatedAt": "2024-08-01T09:45:00.000Z"
+    },
+    {
+      "id": "seed-roast-potatoes",
+      "title": "Crispy Roast Potatoes",
+      "typeId": "side-dish",
+      "description": "Craggy, golden potatoes with a fluffy centre and rosemary-scented edges.",
+      "imageUri": "https://images.unsplash.com/photo-1572453800999-e8d2d1589b7c?auto=format&fit=crop&w=1200&q=85",
+      "servings": 4,
+      "prepMinutes": 60,
+      "ingredients": [
+        "1 kg floury potatoes, peeled and quartered",
+        "4 tbsp olive oil or goose fat",
+        "4 garlic cloves, lightly crushed",
+        "A few rosemary sprigs",
+        "1 tsp flaky salt",
+        "Black pepper"
+      ],
+      "steps": [
+        "Heat the oven to 220 C and put a roasting tray with the oil inside to heat.",
+        "Boil the potatoes in salted water for 8 minutes, then drain well.",
+        "Shake the potatoes in the colander to rough up the edges.",
+        "Carefully add them to the hot fat with the garlic and rosemary and turn to coat.",
+        "Roast for 45 minutes, turning twice, until deeply golden and crisp.",
+        "Season with flaky salt and pepper before serving."
+      ],
+      "createdAt": "2024-08-01T09:50:00.000Z",
+      "updatedAt": "2024-08-01T09:50:00.000Z"
+    },
+    {
+      "id": "seed-berry-crumble",
+      "title": "Summer Berry Crumble",
+      "typeId": "dessert",
+      "description": "Juicy berries under a buttery oat topping that stays crisp around the edges.",
+      "imageUri": "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?auto=format&fit=crop&w=1200&q=85",
+      "servings": 6,
+      "prepMinutes": 45,
+      "ingredients": [
+        "600 g mixed berries",
+        "75 g caster sugar",
+        "1 tbsp cornflour",
+        "150 g plain flour",
+        "100 g rolled oats",
+        "125 g cold butter, cubed",
+        "100 g light brown sugar",
+        "Pinch of salt"
+      ],
+      "steps": [
+        "Heat the oven to 190 C and place the berries in a baking dish.",
+        "Toss the berries with the caster sugar and cornflour.",
+        "Rub the flour, oats, butter, brown sugar and salt together until coarse crumbs form.",
+        "Scatter the crumble evenly over the fruit.",
+        "Bake for 30 minutes until bubbling at the edges and golden on top.",
+        "Rest for 10 minutes and serve warm with yoghurt or ice cream."
+      ],
+      "createdAt": "2024-08-01T09:55:00.000Z",
+      "updatedAt": "2024-08-01T09:55:00.000Z"
+    },
+    {
+      "id": "seed-iced-coffee",
+      "title": "Vanilla Iced Coffee",
+      "typeId": "beverage",
+      "description": "Cold-brew-style coffee over ice with a hint of vanilla and a silky splash of milk.",
+      "imageUri": "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=1200&q=85",
+      "servings": 2,
+      "prepMinutes": 10,
+      "ingredients": [
+        "300 ml strong chilled coffee",
+        "150 ml milk",
+        "2 tsp maple syrup or sugar syrup",
+        "Half a tsp vanilla extract",
+        "Ice",
+        "A pinch of cinnamon"
+      ],
+      "steps": [
+        "Stir the chilled coffee, maple syrup, vanilla and cinnamon together.",
+        "Fill two tall glasses generously with ice.",
+        "Pour the coffee over the ice.",
+        "Top with milk and stir gently.",
+        "Taste and add another splash of syrup if desired."
+      ],
+      "createdAt": "2024-08-01T10:00:00.000Z",
+      "updatedAt": "2024-08-01T10:00:00.000Z"
     }
   ]
 }

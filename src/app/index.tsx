@@ -6,6 +6,7 @@ import { AppButton } from '@/components/app-button';
 import { EmptyState } from '@/components/empty-state';
 import { RecipeCard } from '@/components/recipe-card';
 import { RecipeTypePicker } from '@/components/recipe-type-picker';
+import { SearchField } from '@/components/search-field';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxGridWidth, Spacing } from '@/constants/theme';
@@ -28,7 +29,8 @@ export default function RecipeListScreen() {
   const { columns, prefersTiles } = useLayout();
   const { labelFor } = useRecipeTypes();
   const { recipes, status, error, reload } = useRecipes();
-  const { typeFilter, setTypeFilter, visibleRecipes, summary } = useRecipeFilter(recipes);
+  const { typeFilter, setTypeFilter, query, setQuery, hasQuery, visibleRecipes, summary } =
+    useRecipeFilter(recipes);
 
   if (status === 'loading') {
     return (
@@ -87,6 +89,11 @@ export default function RecipeListScreen() {
         ItemSeparatorComponent={isGrid ? () => <View style={styles.separator} /> : undefined}
         ListHeaderComponent={
           <View style={styles.header}>
+            <SearchField
+              value={query}
+              onChangeText={setQuery}
+              placeholder={`Search ${recipes.length} recipes, ingredients, steps`}
+            />
             <RecipeTypePicker
               label="Filter by type"
               value={typeFilter}
@@ -100,16 +107,27 @@ export default function RecipeListScreen() {
           </View>
         }
         ListEmptyComponent={
-          <EmptyState
-            emoji="🍽️"
-            title={isFiltered ? `No ${labelFor(typeFilter)} yet` : 'No recipes yet'}
-            message={
-              isFiltered
-                ? 'Try another category, or add a recipe to this one.'
-                : 'Tap Add to write your first recipe.'
-            }
-            action={<AppButton label="Add a recipe" onPress={() => router.push('/add')} />}
-          />
+          hasQuery ? (
+            <EmptyState
+              emoji="🔍"
+              title="Nothing matches"
+              message={`No recipe mentions “${query.trim()}”.${
+                isFiltered ? ` Try clearing the ${labelFor(typeFilter)} filter too.` : ''
+              }`}
+              action={<AppButton label="Clear search" onPress={() => setQuery('')} />}
+            />
+          ) : (
+            <EmptyState
+              emoji="🍽️"
+              title={isFiltered ? `No ${labelFor(typeFilter)} yet` : 'No recipes yet'}
+              message={
+                isFiltered
+                  ? 'Try another category, or add a recipe to this one.'
+                  : 'Tap Add to write your first recipe.'
+              }
+              action={<AppButton label="Add a recipe" onPress={() => router.push('/add')} />}
+            />
+          )
         }
       />
     </ThemedView>
