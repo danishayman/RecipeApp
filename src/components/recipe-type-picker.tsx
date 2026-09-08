@@ -3,7 +3,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Radii, Spacing } from '@/constants/theme';
-import { findRecipeType, RECIPE_TYPES } from '@/data/recipe-catalog';
+import { useRecipeTypes } from '@/hooks/use-recipe-types';
 import { useTheme } from '@/hooks/use-theme';
 import { ALL_TYPES } from '@/types/recipe';
 
@@ -32,12 +32,12 @@ export function RecipeTypePicker({
   accessibilityHint,
 }: RecipeTypePickerProps) {
   const theme = useTheme();
+  const { types, findType } = useRecipeTypes();
 
   // A recipe saved under a category that has since been removed from
   // recipetypes.json would otherwise select nothing and render a blank field.
   // Offering the orphaned value keeps the control honest about what is set.
-  const isOrphanedValue =
-    value.length > 0 && value !== ALL_TYPES && findRecipeType(value) === undefined;
+  const isOrphanedValue = value.length > 0 && value !== ALL_TYPES && findType(value) === undefined;
 
   return (
     <View style={styles.container}>
@@ -67,7 +67,7 @@ export function RecipeTypePicker({
             <Picker.Item label="Uncategorised" value={value} color={theme.text} />
           ) : null}
 
-          {RECIPE_TYPES.map((type) => (
+          {types.map((type) => (
             <Picker.Item
               key={type.id}
               label={`${type.emoji}  ${type.label}`}

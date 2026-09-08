@@ -93,8 +93,15 @@ src/
     recipe-factory.ts     Id/timestamp generation, draft normalisation
     recipe-form.ts        Form value shape, validation, draft conversion
     validation.ts         Runtime type guards
-  hooks/                  useTheme, useLayout
-  state/                  RecipesProvider: the in-memory collection
+  hooks/
+    use-recipe-types.ts    Categories + label/emoji lookups
+    use-recipe-filter.ts   Category filter, derived list and summary
+    use-recipe-form.ts     Form values, validation timing, save lifecycle
+    use-image-picker.ts    Permissions, camera/library, persist the result
+    use-async-callback.ts  Pending/error state for any async action
+    use-layout.ts          Orientation, breakpoints, column count
+    use-theme.ts           Palette for the active colour scheme
+  state/                  RecipesProvider + useRecipes: the shared collection
   storage/
     key-value-store.ts    KeyValueStore interface over AsyncStorage
     recipe-repository.ts  All reads/writes, seeding, versioned keys
@@ -111,6 +118,38 @@ filter and both forms read the same catalog, so they cannot drift apart.
 versioned keys, and first-launch seeding. `RecipesProvider` holds the
 collection in memory so the listing, add and detail screens all mutate one
 array rather than refetching on focus.
+
+### Custom hooks
+
+Behaviour that more than one screen needed lives in a hook rather than in a
+component, so the components are left doing layout and the logic is testable
+and reusable on its own.
+
+| Hook               | What it owns                                                     | Used by                                  |
+| ------------------ | ---------------------------------------------------------------- | ---------------------------------------- |
+| `useRecipes`       | The shared collection and its CRUD operations (context)          | Every screen                             |
+| `useRecipeTypes`   | Categories from `recipetypes.json`, plus label and emoji lookups | Picker, cards, detail, image placeholder |
+| `useRecipeFilter`  | Category selection, the filtered list and its pluralised summary | Listing                                  |
+| `useRecipeForm`    | Form values, when validation is allowed to speak, the save       | Add screen and detail edit mode          |
+| `useImagePicker`   | Permission, camera/library launch, copy into permanent storage   | Photo field                              |
+| `useAsyncCallback` | Pending and error state around any async action                  | `useRecipeForm`, `useImagePicker`        |
+| `useLayout`        | Orientation, tablet breakpoint, column count                     | Listing, detail                          |
+| `useTheme`         | The palette for the active colour scheme                         | Everywhere                               |
+
+Two decisions inside them are worth pointing out.
+
+**Validation errors are derived, not stored.** `useRecipeForm` computes them
+with `useMemo` from the current values and a "has tried to submit yet" flag.
+Holding them in state would mean re-validating in an effect every time a field
+changed, and they could then fall out of step with what the user has typed.
+The visible behaviour is that the form stays quiet until the first submit, and
+from then on each error clears as its field is fixed.
+
+**The one effect that remains is a genuine subscription.** `useAsyncCallback`
+uses `useEffect` for what effects are actually for - synchronising with
+something outside React. Its cleanup marks the component unmounted so a save
+or a photo pick that settles after the user has navigated away does not set
+state on a component that is gone.
 
 ### Decisions worth calling out
 
@@ -156,7 +195,7 @@ adds are local files and always render.
 | HCI-sound UI, adapts to screen size/orientation, respects safe area                 | `useLayout`, safe-area insets, tokens in `constants/theme.ts`                                                                     |
 | No crashes during normal use                                                        | Error boundaries, runtime guards — see testing below                                                                              |
 | OOP principles, consistent naming and formatting                                    | `RecipeRepository` class over an injectable `KeyValueStore`; ESLint + Prettier                                                    |
-| Proper lifecycle and state management                                               | Hooks throughout; `RecipesProvider` context; no `setState` cascades (lint-enforced)                                               |
+| Proper lifecycle and state management                                               | State, effect and eight custom hooks (see Custom hooks); `RecipesProvider` context; no `setState` cascades (lint-enforced)        |
 | At least one third-party library used deliberately                                  | `@react-native-async-storage/async-storage`, `@react-native-picker/picker`, `expo-image-picker`, `expo-file-system`, `expo-image` |
 
 ---
@@ -187,10 +226,16 @@ iOS run is genuinely unverified and should be treated as such.
 
 ## Bonus items
 
-None attempted. The optional extras in the brief — extracted reusable hooks
-beyond what the app needed, authentication with session persistence, a
-networking layer, and Redux/MobX — were left out deliberately to keep the
-submission within its time budget.
+**Hooks — attempted.** The state behind the editor, the photo picker, the
+category filter and the category lookups was pulled out of the components into
+the custom hooks listed above. The components lost about a third of their code
+and gained nothing they do not need: `RecipeForm` and `PhotoField` are now
+presentational, and the add screen and the detail screen's edit mode share one
+hook rather than two copies of the same state.
+
+Not attempted: authentication with session persistence, a networking layer,
+and Redux/MobX. These were left out deliberately to keep the submission within
+its time budget.
 
 ---
 

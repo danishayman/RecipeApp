@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,13 +8,8 @@ import { PhotoField } from '@/components/photo-field';
 import { RecipeTypePicker } from '@/components/recipe-type-picker';
 import { TextField } from '@/components/text-field';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
-import {
-  isValid,
-  toRecipeDraft,
-  validateFormValues,
-  type RecipeFormErrors,
-  type RecipeFormValues,
-} from '@/data/recipe-form';
+import type { RecipeFormValues } from '@/data/recipe-form';
+import { useRecipeForm } from '@/hooks/use-recipe-form';
 import type { RecipeDraft } from '@/types/recipe';
 
 interface RecipeFormProps {
@@ -29,54 +24,21 @@ interface RecipeFormProps {
  * The recipe editor, shared by the add screen and the detail screen's edit
  * mode so both offer exactly the same fields and rules.
  *
- * Validation runs on submit and then live, so the user is not scolded about
- * fields they have not reached yet but does see errors clear as they fix them.
+ * Purely presentational: every piece of state, the validation timing and the
+ * save lifecycle live in `useRecipeForm`.
  */
 export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: RecipeFormProps) {
   const insets = useSafeAreaInsets();
-  const [values, setValues] = useState<RecipeFormValues>(initialValues);
-  const [errors, setErrors] = useState<RecipeFormErrors>({});
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
 
-  const update = useCallback(
-    <Field extends keyof RecipeFormValues>(field: Field, value: RecipeFormValues[Field]) => {
-      setValues((current) => {
-        const next = { ...current, [field]: value };
+  const handleSaveError = useCallback((error: Error) => {
+    Alert.alert('Could not save this recipe', error.message);
+  }, []);
 
-        // Only re-validate once the user has tried to submit at least once.
-        if (hasSubmitted) {
-          setErrors(validateFormValues(next));
-        }
-
-        return next;
-      });
-    },
-    [hasSubmitted]
-  );
-
-  const submit = async () => {
-    const found = validateFormValues(values);
-    setErrors(found);
-    setHasSubmitted(true);
-
-    if (!isValid(found)) {
-      return;
-    }
-
-    setIsSaving(true);
-
-    try {
-      await onSubmit(toRecipeDraft(values));
-    } catch (cause) {
-      Alert.alert(
-        'Could not save this recipe',
-        cause instanceof Error ? cause.message : 'Please try again.'
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  const { values, errors, isSaving, setField, submit } = useRecipeForm({
+    initialValues,
+    onSubmit,
+    onError: handleSaveError,
+  });
 
   return (
     <KeyboardAvoidingView
@@ -93,7 +55,7 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
         <TextField
           label="Recipe name"
           value={values.title}
-          onChangeText={(next) => update('title', next)}
+          onChangeText={(next) => setField('title', next)}
           placeholder="Spaghetti alla Carbonara"
           error={errors.title}
           autoCapitalize="sentences"
@@ -103,7 +65,7 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
         <RecipeTypePicker
           label="Type"
           value={values.typeId}
-          onChange={(next) => update('typeId', next)}
+          onChange={(next) => setField('typeId', next)}
           accessibilityHint="Sets which category this recipe is filed under"
         />
 
@@ -111,13 +73,13 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
           label="Photo"
           value={values.imageUri}
           typeId={values.typeId}
-          onChange={(next) => update('imageUri', next)}
+          onChange={(next) => setField('imageUri', next)}
         />
 
         <TextField
           label="Description"
           value={values.description}
-          onChangeText={(next) => update('description', next)}
+          onChangeText={(next) => setField('description', next)}
           placeholder="A short note about the dish"
           multiline
         />
@@ -127,7 +89,7 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
             <TextField
               label="Serves"
               value={values.servings}
-              onChangeText={(next) => update('servings', next)}
+              onChangeText={(next) => setField('servings', next)}
               keyboardType="number-pad"
               error={errors.servings}
             />
@@ -136,7 +98,7 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
             <TextField
               label="Minutes"
               value={values.prepMinutes}
-              onChangeText={(next) => update('prepMinutes', next)}
+              onChangeText={(next) => setField('prepMinutes', next)}
               keyboardType="number-pad"
               error={errors.prepMinutes}
             />
@@ -146,7 +108,7 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
         <DynamicListField
           label="Ingredients"
           values={values.ingredients}
-          onChange={(next) => update('ingredients', next)}
+          onChange={(next) => setField('ingredients', next)}
           placeholder={(index) => (index === 0 ? '400 g spaghetti' : 'Another ingredient')}
           addLabel="Add ingredient"
           error={errors.ingredients}
@@ -155,7 +117,7 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
         <DynamicListField
           label="Method"
           values={values.steps}
-          onChange={(next) => update('steps', next)}
+          onChange={(next) => setField('steps', next)}
           placeholder={(index) => (index === 0 ? 'Bring a pot of water to the boil' : 'Next step')}
           addLabel="Add step"
           ordered
@@ -164,12 +126,7 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
 
         <View style={styles.actions}>
           <AppButton label="Cancel" variant="secondary" onPress={onCancel} style={styles.flex} />
-          <AppButton
-            label={submitLabel}
-            onPress={() => void submit()}
-            busy={isSaving}
-            style={styles.flex}
-          />
+          <AppButton label={submitLabel} onPress={submit} busy={isSaving} style={styles.flex} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

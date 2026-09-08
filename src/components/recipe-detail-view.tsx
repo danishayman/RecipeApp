@@ -6,8 +6,8 @@ import { AppButton } from '@/components/app-button';
 import { RecipeImage } from '@/components/recipe-image';
 import { ThemedText } from '@/components/themed-text';
 import { MaxContentWidth, Radii, Spacing } from '@/constants/theme';
-import { recipeTypeLabel } from '@/data/recipe-catalog';
 import { useLayout } from '@/hooks/use-layout';
+import { useRecipeTypes } from '@/hooks/use-recipe-types';
 import { useTheme } from '@/hooks/use-theme';
 import type { Recipe } from '@/types/recipe';
 
@@ -28,6 +28,7 @@ interface RecipeDetailViewProps {
  */
 export function RecipeDetailView({ recipe, onEdit, onDelete }: RecipeDetailViewProps) {
   const theme = useTheme();
+  const { labelFor } = useRecipeTypes();
   const insets = useSafeAreaInsets();
   const { isWide, isLandscape } = useLayout();
   const isSplit = isWide && isLandscape;
@@ -58,7 +59,7 @@ export function RecipeDetailView({ recipe, onEdit, onDelete }: RecipeDetailViewP
             <View style={styles.metaRow}>
               <View style={[styles.chip, { backgroundColor: theme.backgroundSelected }]}>
                 <ThemedText type="small" themeColor="textSecondary">
-                  {recipeTypeLabel(recipe.typeId)}
+                  {labelFor(recipe.typeId)}
                 </ThemedText>
               </View>
               <ThemedText type="small" themeColor="textSecondary">

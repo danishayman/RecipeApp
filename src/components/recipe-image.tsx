@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { recipeTypeEmoji } from '@/data/recipe-catalog';
+import { useRecipeTypes } from '@/hooks/use-recipe-types';
 import { useTheme } from '@/hooks/use-theme';
 
 interface RecipeImageProps {
@@ -36,6 +36,7 @@ export function RecipeImage({
   accessibilityLabel,
 }: RecipeImageProps) {
   const theme = useTheme();
+  const { emojiFor } = useRecipeTypes();
 
   // Remember which uri failed rather than a bare boolean. A new uri then
   // deserves a fresh attempt for free, where a boolean would have to be reset
@@ -58,7 +59,7 @@ export function RecipeImage({
       ]}>
       {showPlaceholder ? (
         <ThemedText style={{ fontSize: emojiSize, lineHeight: emojiSize * 1.2 }}>
-          {recipeTypeEmoji(typeId)}
+          {emojiFor(typeId)}
         </ThemedText>
       ) : (
         <Image

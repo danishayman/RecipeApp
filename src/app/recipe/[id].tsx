@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
@@ -23,6 +23,9 @@ export { AppErrorBoundary as ErrorBoundary };
  * hands the rendering to `RecipeDetailView` or, in edit mode, to the same
  * `RecipeForm` the add screen uses - so every field is editable and the two
  * screens cannot drift apart.
+ *
+ * Every hook runs before the early returns below, so the order stays the same
+ * on every render whether or not the recipe was found.
  */
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -30,16 +33,48 @@ export default function RecipeDetailScreen() {
   const { getRecipe, updateRecipe, deleteRecipe, status } = useRecipes();
   const [isEditing, setIsEditing] = useState(false);
 
-  const recipe = typeof id === 'string' ? getRecipe(id) : undefined;
+  const recipeId = typeof id === 'string' ? id : undefined;
+  const recipe = recipeId === undefined ? undefined : getRecipe(recipeId);
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     // Guard against a deep link that opened this screen with nothing beneath it.
     if (router.canGoBack()) {
       router.back();
     } else {
       router.replace('/');
     }
-  };
+  }, [router]);
+
+  const handleSave = useCallback(
+    async (draft: RecipeDraft) => {
+      if (recipeId === undefined) {
+        return;
+      }
+
+      await updateRecipe(recipeId, draft);
+      setIsEditing(false);
+    },
+    [updateRecipe, recipeId]
+  );
+
+  const confirmDelete = useCallback(() => {
+    if (recipe === undefined) {
+      return;
+    }
+
+    Alert.alert('Delete this recipe?', `${recipe.title} will be removed for good.`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          void deleteRecipe(recipe.id)
+            .then(goBack)
+            .catch(() => Alert.alert('Could not delete', 'Please try again.'));
+        },
+      },
+    ]);
+  }, [recipe, deleteRecipe, goBack]);
 
   if (status === 'loading') {
     return (
@@ -63,26 +98,6 @@ export default function RecipeDetailScreen() {
       </ThemedView>
     );
   }
-
-  const handleSave = async (draft: RecipeDraft) => {
-    await updateRecipe(recipe.id, draft);
-    setIsEditing(false);
-  };
-
-  const confirmDelete = () => {
-    Alert.alert('Delete this recipe?', `${recipe.title} will be removed for good.`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          void deleteRecipe(recipe.id)
-            .then(goBack)
-            .catch(() => Alert.alert('Could not delete', 'Please try again.'));
-        },
-      },
-    ]);
-  };
 
   return (
     <ThemedView style={styles.container}>

@@ -1,4 +1,6 @@
 import { useRouter } from 'expo-router';
+import { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
 
 import { RecipeForm } from '@/components/recipe-form';
 import { ThemedView } from '@/components/themed-view';
@@ -17,22 +19,25 @@ export default function AddRecipeScreen() {
   const router = useRouter();
   const { addRecipe } = useRecipes();
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     // Guard against a deep link that opened this screen with nothing beneath it.
     if (router.canGoBack()) {
       router.back();
     } else {
       router.replace('/');
     }
-  };
+  }, [router]);
 
-  const handleSubmit = async (draft: RecipeDraft) => {
-    await addRecipe(draft);
-    goBack();
-  };
+  const handleSubmit = useCallback(
+    async (draft: RecipeDraft) => {
+      await addRecipe(draft);
+      goBack();
+    },
+    [addRecipe, goBack]
+  );
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView style={styles.container}>
       <RecipeForm
         initialValues={emptyFormValues()}
         submitLabel="Save recipe"
@@ -42,3 +47,9 @@ export default function AddRecipeScreen() {
     </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

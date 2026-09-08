@@ -1,12 +1,11 @@
-import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { useCallback } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { RecipeImage } from '@/components/recipe-image';
 import { ThemedText } from '@/components/themed-text';
 import { Radii, Spacing } from '@/constants/theme';
-import { persistPhoto } from '@/storage/photo-storage';
+import { PermissionDeniedError, useImagePicker } from '@/hooks/use-image-picker';
 
 interface PhotoFieldProps {
   label: string;
@@ -20,59 +19,25 @@ interface PhotoFieldProps {
 /**
  * Photo picker for the recipe form.
  *
- * Offers the camera and the photo library, and copies whatever is chosen into
- * permanent storage so the photo outlives the cache directory.
+ * Presentational: permissions, launching the camera or library, and copying
+ * the result into permanent storage all live in `useImagePicker`.
  */
 export function PhotoField({ label, value, onChange, typeId }: PhotoFieldProps) {
-  const [libraryPermission, requestLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
-  const [cameraPermission, requestCameraPermission] = ImagePicker.useCameraPermissions();
-  const [isPicking, setIsPicking] = useState(false);
+  const handlePicked = useCallback((uri: string) => onChange(uri), [onChange]);
 
-  /** Runs a picker, guarding it with the permission it needs. */
-  const pick = async (source: 'camera' | 'library') => {
-    if (isPicking) return;
-    setIsPicking(true);
-
-    try {
-      const granted =
-        source === 'camera'
-          ? (cameraPermission?.granted ?? false) || (await requestCameraPermission()).granted
-          : (libraryPermission?.granted ?? false) || (await requestLibraryPermission()).granted;
-
-      if (!granted) {
-        Alert.alert(
-          source === 'camera' ? 'Camera unavailable' : 'Photos unavailable',
-          `RecipeApp needs permission to use your ${
-            source === 'camera' ? 'camera' : 'photo library'
-          }. You can grant it in Settings.`
-        );
-        return;
-      }
-
-      const options: ImagePicker.ImagePickerOptions = {
-        mediaTypes: 'images',
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.7,
-      };
-
-      const result =
-        source === 'camera'
-          ? await ImagePicker.launchCameraAsync(options)
-          : await ImagePicker.launchImageLibraryAsync(options);
-
-      const asset = result.canceled ? undefined : result.assets?.[0];
-
-      if (asset !== undefined) {
-        onChange(persistPhoto(asset.uri));
-      }
-    } catch (cause) {
-      console.warn('[PhotoField] Picking a photo failed.', cause);
-      Alert.alert('Could not add that photo', 'Please try again.');
-    } finally {
-      setIsPicking(false);
+  const handleError = useCallback((error: Error) => {
+    if (error instanceof PermissionDeniedError) {
+      Alert.alert(
+        error.source === 'camera' ? 'Camera unavailable' : 'Photos unavailable',
+        error.message
+      );
+      return;
     }
-  };
+
+    Alert.alert('Could not add that photo', 'Please try again.');
+  }, []);
+
+  const { pick, isPicking } = useImagePicker({ onPicked: handlePicked, onError: handleError });
 
   return (
     <View style={styles.container}>
@@ -92,14 +57,14 @@ export function PhotoField({ label, value, onChange, typeId }: PhotoFieldProps) 
         <AppButton
           label="Take photo"
           variant="secondary"
-          onPress={() => void pick('camera')}
+          onPress={() => pick('camera')}
           busy={isPicking}
           style={styles.action}
         />
         <AppButton
           label="Choose photo"
           variant="secondary"
-          onPress={() => void pick('library')}
+          onPress={() => pick('library')}
           busy={isPicking}
           style={styles.action}
         />

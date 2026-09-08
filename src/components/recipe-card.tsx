@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { RecipeImage } from '@/components/recipe-image';
 import { ThemedText } from '@/components/themed-text';
 import { Radii, Spacing } from '@/constants/theme';
-import { recipeTypeLabel } from '@/data/recipe-catalog';
+import { useRecipeTypes } from '@/hooks/use-recipe-types';
 import { useTheme } from '@/hooks/use-theme';
 import type { Recipe } from '@/types/recipe';
 
@@ -24,6 +24,7 @@ interface RecipeCardProps {
 /** Summary of one recipe in the listing. */
 export function RecipeCard({ recipe, onPress, layout = 'row' }: RecipeCardProps) {
   const theme = useTheme();
+  const { labelFor } = useRecipeTypes();
   const isTile = layout === 'tile';
 
   return (
@@ -31,7 +32,7 @@ export function RecipeCard({ recipe, onPress, layout = 'row' }: RecipeCardProps)
       onPress={onPress}
       disabled={onPress === undefined}
       accessibilityRole="button"
-      accessibilityLabel={`${recipe.title}, ${recipeTypeLabel(recipe.typeId)}`}
+      accessibilityLabel={`${recipe.title}, ${labelFor(recipe.typeId)}`}
       accessibilityHint={onPress === undefined ? undefined : 'Opens the full recipe'}
       style={({ pressed }) => [
         styles.card,
@@ -55,7 +56,7 @@ export function RecipeCard({ recipe, onPress, layout = 'row' }: RecipeCardProps)
 
         <View style={[styles.chip, { backgroundColor: theme.backgroundSelected }]}>
           <ThemedText type="small" themeColor="textSecondary">
-            {recipeTypeLabel(recipe.typeId)}
+            {labelFor(recipe.typeId)}
           </ThemedText>
         </View>
 

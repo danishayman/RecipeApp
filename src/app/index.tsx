@@ -1,5 +1,4 @@
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,32 +9,26 @@ import { RecipeTypePicker } from '@/components/recipe-type-picker';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxGridWidth, Spacing } from '@/constants/theme';
-import { recipeTypeLabel } from '@/data/recipe-catalog';
 import { useLayout } from '@/hooks/use-layout';
+import { useRecipeFilter } from '@/hooks/use-recipe-filter';
+import { useRecipeTypes } from '@/hooks/use-recipe-types';
 import { useRecipes } from '@/state/recipes-provider';
-import { ALL_TYPES, type Recipe } from '@/types/recipe';
+import { ALL_TYPES } from '@/types/recipe';
 
 /**
  * Recipe listing screen.
  *
- * Shows every stored recipe, narrowed by the category spinner. The filter is
- * screen-local state; the collection itself lives in `RecipesProvider`.
- *
- * The list lays out as a single column of row cards on a phone and as a grid
- * of tile cards from tablet width upwards, in either orientation.
+ * Composes three hooks: the shared collection, the screen-local category
+ * filter over it, and the layout description that decides between a list and
+ * a grid. The screen itself only arranges what they return.
  */
 export default function RecipeListScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { columns, prefersTiles } = useLayout();
+  const { labelFor } = useRecipeTypes();
   const { recipes, status, error, reload } = useRecipes();
-  const [typeFilter, setTypeFilter] = useState<string>(ALL_TYPES);
-
-  const visibleRecipes = useMemo<Recipe[]>(
-    () =>
-      typeFilter === ALL_TYPES ? recipes : recipes.filter((recipe) => recipe.typeId === typeFilter),
-    [recipes, typeFilter]
-  );
+  const { typeFilter, setTypeFilter, visibleRecipes, summary } = useRecipeFilter(recipes);
 
   if (status === 'loading') {
     return (
@@ -62,6 +55,7 @@ export default function RecipeListScreen() {
   }
 
   const isGrid = columns > 1;
+  const isFiltered = typeFilter !== ALL_TYPES;
 
   return (
     <ThemedView style={styles.container}>
@@ -100,20 +94,18 @@ export default function RecipeListScreen() {
               accessibilityHint="Narrows the list to a single category"
             />
             <ThemedText type="small" themeColor="textSecondary">
-              {describeCount(visibleRecipes.length, typeFilter)}
+              {summary}
             </ThemedText>
           </View>
         }
         ListEmptyComponent={
           <EmptyState
             emoji="🍽️"
-            title={
-              typeFilter === ALL_TYPES ? 'No recipes yet' : `No ${recipeTypeLabel(typeFilter)} yet`
-            }
+            title={isFiltered ? `No ${labelFor(typeFilter)} yet` : 'No recipes yet'}
             message={
-              typeFilter === ALL_TYPES
-                ? 'Tap Add to write your first recipe.'
-                : 'Try another category, or add a recipe to this one.'
+              isFiltered
+                ? 'Try another category, or add a recipe to this one.'
+                : 'Tap Add to write your first recipe.'
             }
             action={<AppButton label="Add a recipe" onPress={() => router.push('/add')} />}
           />
@@ -121,15 +113,6 @@ export default function RecipeListScreen() {
       />
     </ThemedView>
   );
-}
-
-/** Pluralised summary of what the list is currently showing. */
-function describeCount(count: number, typeFilter: string): string {
-  const noun = count === 1 ? 'recipe' : 'recipes';
-
-  return typeFilter === ALL_TYPES
-    ? `${count} ${noun}`
-    : `${count} ${noun} in ${recipeTypeLabel(typeFilter)}`;
 }
 
 const styles = StyleSheet.create({
