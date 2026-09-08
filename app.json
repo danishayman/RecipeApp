@@ -40,7 +40,8 @@
           "photosPermission": "Allow RecipeApp to access your photos so you can add a picture to a recipe.",
           "cameraPermission": "Allow RecipeApp to use your camera so you can photograph a recipe."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

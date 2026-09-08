@@ -58,6 +58,15 @@ npx expo start
 
 Then press `a` for Android, `i` for iOS, or scan the QR code with Expo Go.
 
+The app opens on a sign-in screen. A demo account is created on first launch
+and its credentials are also shown on the screen itself:
+
+| Username | Password     |
+| -------- | ------------ |
+| `demo`   | `recipes123` |
+
+"Create an account instead" registers a new one.
+
 ### Scripts
 
 | Script                 | Purpose                     |
@@ -80,7 +89,8 @@ Lint, typecheck and format all pass with no warnings.
 ```
 src/
   app/                    Expo Router routes (file-based navigation)
-    _layout.tsx           Root stack, theme, providers, error boundary
+    _layout.tsx           Root stack, theme, providers, auth gate, error boundary
+    login.tsx             Sign in / create account
     index.tsx             Recipe listing + type filter
     add.tsx               Add Recipe
     recipe/[id].tsx       Recipe detail, edit mode, delete
@@ -92,6 +102,8 @@ src/
     recipe-catalog.ts     Validated, frozen catalog + lookups
     recipe-factory.ts     Id/timestamp generation, draft normalisation
     recipe-form.ts        Form value shape, validation, draft conversion
+    auth-form.ts          Login form shape and rules
+    credentials.ts        Password hashing and credential guards
     validation.ts         Runtime type guards
   hooks/
     use-recipe-types.ts    Categories + label/emoji lookups
@@ -101,12 +113,18 @@ src/
     use-async-callback.ts  Pending/error state for any async action
     use-layout.ts          Orientation, breakpoints, column count
     use-theme.ts           Palette for the active colour scheme
-  state/                  RecipesProvider + useRecipes: the shared collection
+  state/
+    recipes-provider.tsx  RecipesProvider + useRecipes: the shared collection
+    auth-provider.tsx     AuthProvider + useAuth: the signed-in user
   storage/
     key-value-store.ts    KeyValueStore interface over AsyncStorage
+    secure-store.ts       The same interface over SecureStore
     recipe-repository.ts  All reads/writes, seeding, versioned keys
+    auth-repository.ts    Accounts and session, in secure storage
     photo-storage.ts      Copies picked photos into permanent storage
-  types/recipe.ts         Recipe / RecipeType / RecipeDraft
+  types/
+    recipe.ts             Recipe / RecipeType / RecipeDraft
+    auth.ts               Credential / Session
 ```
 
 ### Data flow
@@ -150,6 +168,47 @@ uses `useEffect` for what effects are actually for - synchronising with
 something outside React. Its cleanup marks the component unmounted so a save
 or a photo pick that settles after the user has navigated away does not set
 state on a component that is gone.
+
+### Authentication
+
+A sign-in gate sits in front of the app. `Stack.Protected` from expo-router
+hides the app routes while `isSignedIn` is false and hides the login route
+while it is true, so signing out needs no imperative navigation: the guard
+flips and the only remaining screen is the one that renders.
+
+`AuthRepository` is built exactly like `RecipeRepository` but is handed the
+SecureStore implementation of `KeyValueStore` rather than the AsyncStorage one.
+That swap is the whole reason the interface exists.
+
+**What is stored, and what is not.** The password is never written anywhere.
+Each account gets a random 16-byte salt, and what goes to disk is the salt plus
+`SHA-256(salt + password)`:
+
+```json
+{ "username": "demo", "salt": "65bc249f…", "hash": "53839f03…", "createdAt": "…" }
+```
+
+Signing in re-hashes the entered password with the stored salt and compares
+digests. The stored digest is never reversed, because it cannot be. Both the
+account list and the session live in SecureStore, which is the Android Keystore
+and the iOS Keychain — encrypted at rest and excluded from ordinary backups.
+
+**Where this falls short, stated plainly.** SHA-256 is a _fast_ hash, which is
+the wrong property for password storage: someone holding the digest can try
+candidates quickly. Real systems use a deliberately slow KDF — bcrypt, scrypt
+or Argon2 — on a server. `expo-crypto` exposes no KDF, and iterating its
+digest enough times to matter would mean thousands of async native calls on a
+sign-in. For a local, offline demo whose digest sits in hardware-backed storage
+this is a reasonable trade; it is not production-grade password handling and is
+not presented as such.
+
+**SecureStore has no web implementation.** On web the store falls back to
+AsyncStorage with a console warning, and the values are _not_ encrypted there.
+The app is mobile-first; a real web deployment would keep the session in an
+HTTP-only cookie set by a server.
+
+The session deliberately carries no expiry — the brief asks for it to persist
+until logout, and it does.
 
 ### Decisions worth calling out
 
@@ -217,6 +276,20 @@ installed system image, via Expo Go):
   beneath it
 - invalid JSON in storage degrades to an empty list rather than crashing
 
+Authentication, verified the same way:
+
+- a cold launch shows the sign-in screen, not the recipe list
+- a wrong password is rejected inline and does not navigate
+- the demo credentials sign in and land on the six recipes
+- force-stop and relaunch goes straight to the list: the session persisted
+- signing out returns to sign-in, and relaunching after that still shows
+  sign-in, so the session was cleared rather than merely navigated away from
+- registration rejects a password under eight characters, then creates the
+  account and signs into it
+- a temporary diagnostic printed the stored account record: it contained only
+  the username, salt, hash and timestamp, with the plaintext password appearing
+  nowhere. The diagnostic was removed afterwards.
+
 **Not tested on iOS.** This project was developed on Windows, so no iOS
 simulator was available. Nothing in the app is Android-specific — the only
 platform branches are picker sizing and keyboard-avoidance behaviour — but the
@@ -233,9 +306,14 @@ and gained nothing they do not need: `RecipeForm` and `PhotoField` are now
 presentational, and the add screen and the detail screen's edit mode share one
 hook rather than two copies of the same state.
 
-Not attempted: authentication with session persistence, a networking layer,
-and Redux/MobX. These were left out deliberately to keep the submission within
-its time budget.
+**Authentication — attempted.** Login and logout with a session that survives a
+restart and ends only on an explicit sign-out. Passwords are salted and hashed
+rather than stored, and both the account record and the session live in
+SecureStore. See the Authentication section above, including an honest note on
+where the hashing scheme falls short of production practice.
+
+Not attempted: a networking layer, and Redux/MobX. These were left out
+deliberately to keep the submission within its time budget.
 
 ---
 
