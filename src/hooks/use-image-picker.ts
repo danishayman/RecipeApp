@@ -12,8 +12,8 @@ export class PermissionDeniedError extends Error {
   constructor(readonly source: PhotoSource) {
     super(
       source === 'camera'
-        ? 'RecipeApp needs permission to use your camera. You can grant it in Settings.'
-        : 'RecipeApp needs permission to use your photo library. You can grant it in Settings.'
+        ? 'YumBook needs permission to use your camera. You can grant it in Settings.'
+        : 'YumBook needs permission to use your photo library. You can grant it in Settings.'
     );
     this.name = 'PermissionDeniedError';
   }

@@ -51,7 +51,7 @@ export function DynamicListField({
       </ThemedText>
 
       {values.map((value, index) => (
-        <View key={index} style={styles.row}>
+        <View key={index} style={[styles.row, { borderBottomColor: theme.border }]}>
           {ordered ? (
             <View style={[styles.ordinal, { backgroundColor: theme.backgroundSelected }]}>
               <ThemedText type="meta" themeColor="textSecondary">
@@ -70,8 +70,8 @@ export function DynamicListField({
             style={[
               styles.input,
               {
-                backgroundColor: theme.backgroundElement,
-                borderColor: hasError ? theme.danger : theme.border,
+                backgroundColor: 'transparent',
+                borderColor: hasError ? theme.danger : 'transparent',
                 color: theme.text,
               },
             ]}
@@ -84,8 +84,7 @@ export function DynamicListField({
             style={({ pressed }) => [
               styles.remove,
               {
-                backgroundColor: pressed ? theme.backgroundSelected : theme.backgroundElement,
-                borderColor: theme.border,
+                backgroundColor: pressed ? theme.backgroundSelected : 'transparent',
               },
             ]}>
             <ThemedText type="smallBold" themeColor="textSecondary">
@@ -99,10 +98,7 @@ export function DynamicListField({
         onPress={() => onChange([...values, ''])}
         accessibilityRole="button"
         accessibilityLabel={addLabel}
-        style={({ pressed }) => [
-          styles.add,
-          { borderColor: theme.accentStrong, opacity: pressed ? 0.7 : 1 },
-        ]}>
+        style={({ pressed }) => [styles.add, { opacity: pressed ? 0.7 : 1 }]}>
         <ThemedText type="label" style={{ color: theme.accentStrong }}>
           + {addLabel}
         </ThemedText>
@@ -125,6 +121,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.two,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   ordinal: {
     width: 28,
@@ -135,29 +132,25 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    minHeight: 52,
-    paddingHorizontal: Spacing.three,
+    minHeight: 46,
+    paddingHorizontal: 0,
     paddingVertical: Spacing.two,
-    borderRadius: Radii.medium,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 0,
     fontFamily: Fonts.sans,
     fontSize: 15,
     textAlignVertical: 'top',
   },
   remove: {
-    width: 52,
-    height: 52,
-    borderRadius: Radii.medium,
-    borderWidth: StyleSheet.hairlineWidth,
+    width: 36,
+    height: 46,
+    borderRadius: Radii.small,
     alignItems: 'center',
     justifyContent: 'center',
   },
   add: {
     alignSelf: 'flex-start',
-    minHeight: 44,
+    minHeight: 32,
     justifyContent: 'center',
-    paddingHorizontal: Spacing.three,
-    borderRadius: Radii.pill,
-    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 0,
   },
 });

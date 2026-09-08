@@ -10,6 +10,8 @@ interface TextFieldProps extends Omit<TextInputProps, 'style' | 'placeholderText
   error?: string | null;
   /** Grows the input and enables multiline entry. */
   multiline?: boolean;
+  /** A single ruled line, used by the spare sign-in screen. */
+  variant?: 'boxed' | 'ruled';
 }
 
 /** A labelled text input with inline validation feedback. */
@@ -17,6 +19,7 @@ export function TextField({
   label,
   error = null,
   multiline = false,
+  variant = 'boxed',
   ...inputProps
 }: TextFieldProps) {
   const theme = useTheme();
@@ -36,8 +39,9 @@ export function TextField({
         style={[
           styles.input,
           multiline && styles.multiline,
+          variant === 'ruled' && styles.ruled,
           {
-            backgroundColor: theme.backgroundElement,
+            backgroundColor: variant === 'boxed' ? theme.backgroundElement : 'transparent',
             borderColor: hasError ? theme.danger : theme.border,
             color: theme.text,
           },
@@ -69,5 +73,12 @@ const styles = StyleSheet.create({
   multiline: {
     minHeight: 96,
     textAlignVertical: 'top',
+  },
+  ruled: {
+    minHeight: 46,
+    paddingHorizontal: 0,
+    borderWidth: 0,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderRadius: 0,
   },
 });

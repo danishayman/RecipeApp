@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "RecipeApp",
-    "slug": "RecipeApp",
+    "name": "YumBook",
+    "slug": "yumbook",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
-    "scheme": "recipeapp",
+    "scheme": "yumbook",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
@@ -37,8 +37,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow RecipeApp to access your photos so you can add a picture to a recipe.",
-          "cameraPermission": "Allow RecipeApp to use your camera so you can photograph a recipe."
+          "photosPermission": "Allow YumBook to access your photos so you can add a picture to a recipe.",
+          "cameraPermission": "Allow YumBook to use your camera so you can photograph a recipe."
         }
       ],
       "expo-secure-store"

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Fonts, Radii, Spacing } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger';
@@ -21,6 +21,8 @@ interface AppButtonProps {
   busy?: boolean;
   style?: StyleProp<ViewStyle>;
   accessibilityHint?: string;
+  /** Use the compact tracked treatment for utility actions. */
+  labelCase?: 'normal' | 'caps';
 }
 
 /**
@@ -37,6 +39,7 @@ export function AppButton({
   busy = false,
   style,
   accessibilityHint,
+  labelCase = 'normal',
 }: AppButtonProps) {
   const theme = useTheme();
   const isInert = disabled || busy;
@@ -73,7 +76,11 @@ export function AppButton({
       {busy ? (
         <ActivityIndicator color={foreground} />
       ) : (
-        <ThemedText style={[styles.label, { color: foreground }]}>{label}</ThemedText>
+        <ThemedText
+          type={labelCase === 'caps' ? 'label' : 'smallBold'}
+          style={[styles.label, { color: foreground }]}>
+          {label}
+        </ThemedText>
       )}
     </Pressable>
   );
@@ -92,9 +99,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    fontFamily: Fonts.sans,
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: '600',
+    textAlign: 'center',
   },
 });

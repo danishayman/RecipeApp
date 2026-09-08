@@ -1,5 +1,13 @@
 import { useCallback } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/app-button';
@@ -7,15 +15,18 @@ import { DynamicListField } from '@/components/dynamic-list-field';
 import { PhotoField } from '@/components/photo-field';
 import { RecipeTypePicker } from '@/components/recipe-type-picker';
 import { TextField } from '@/components/text-field';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { ThemedText } from '@/components/themed-text';
+import { MaxContentWidth, Radii, Spacing } from '@/constants/theme';
 import type { RecipeFormValues } from '@/data/recipe-form';
 import { useRecipeForm } from '@/hooks/use-recipe-form';
+import { useTheme } from '@/hooks/use-theme';
 import type { RecipeDraft } from '@/types/recipe';
 
 interface RecipeFormProps {
   /** Starting values. Blank for add, pre-filled for edit. */
   initialValues: RecipeFormValues;
   submitLabel: string;
+  title?: string;
   onSubmit: (draft: RecipeDraft) => Promise<void>;
   onCancel: () => void;
 }
@@ -27,8 +38,15 @@ interface RecipeFormProps {
  * Purely presentational: every piece of state, the validation timing and the
  * save lifecycle live in `useRecipeForm`.
  */
-export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: RecipeFormProps) {
+export function RecipeForm({
+  initialValues,
+  submitLabel,
+  title = 'New recipe',
+  onSubmit,
+  onCancel,
+}: RecipeFormProps) {
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
 
   const handleSaveError = useCallback((error: Error) => {
     Alert.alert('Could not save this recipe', error.message);
@@ -44,7 +62,31 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
     <KeyboardAvoidingView
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={[styles.toolbar, { borderBottomColor: theme.border, paddingTop: insets.top }]}>
+        <Pressable
+          onPress={onCancel}
+          accessibilityRole="button"
+          accessibilityLabel="Cancel"
+          hitSlop={Spacing.two}>
+          <ThemedText type="label" themeColor="textSecondary">
+            Cancel
+          </ThemedText>
+        </Pressable>
+        <ThemedText type="heading">{title}</ThemedText>
+        <Pressable
+          onPress={submit}
+          disabled={isSaving}
+          accessibilityRole="button"
+          accessibilityLabel={submitLabel}
+          hitSlop={Spacing.two}
+          style={{ opacity: isSaving ? 0.5 : 1 }}>
+          <ThemedText type="label" style={{ color: theme.accentStrong }}>
+            Save
+          </ThemedText>
+        </Pressable>
+      </View>
       <ScrollView
+        style={styles.flex}
         contentContainerStyle={[
           styles.content,
           // Keep the action row clear of the home indicator or navigation bar.
@@ -85,24 +127,18 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
         />
 
         <View style={styles.row}>
-          <View style={styles.flex}>
-            <TextField
-              label="Serves"
-              value={values.servings}
-              onChangeText={(next) => setField('servings', next)}
-              keyboardType="number-pad"
-              error={errors.servings}
-            />
-          </View>
-          <View style={styles.flex}>
-            <TextField
-              label="Minutes"
-              value={values.prepMinutes}
-              onChangeText={(next) => setField('prepMinutes', next)}
-              keyboardType="number-pad"
-              error={errors.prepMinutes}
-            />
-          </View>
+          <RecipeNumberField
+            label="Serves"
+            value={values.servings}
+            onChange={(next) => setField('servings', next)}
+            error={errors.servings}
+          />
+          <RecipeNumberField
+            label="Minutes"
+            value={values.prepMinutes}
+            onChange={(next) => setField('prepMinutes', next)}
+            error={errors.prepMinutes}
+          />
         </View>
 
         <DynamicListField
@@ -125,11 +161,71 @@ export function RecipeForm({ initialValues, submitLabel, onSubmit, onCancel }: R
         />
 
         <View style={styles.actions}>
-          <AppButton label="Cancel" variant="secondary" onPress={onCancel} style={styles.flex} />
           <AppButton label={submitLabel} onPress={submit} busy={isSaving} style={styles.flex} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+  );
+}
+
+function RecipeNumberField({
+  label,
+  value,
+  onChange,
+  error,
+}: {
+  label: string;
+  value: string;
+  onChange: (next: string) => void;
+  error?: string | null;
+}) {
+  const theme = useTheme();
+  const amount = Math.max(1, Number.parseInt(value, 10) || 1);
+
+  const update = (difference: number) => onChange(String(Math.max(1, amount + difference)));
+
+  return (
+    <View style={styles.numberField}>
+      <ThemedText type="label" themeColor="textSecondary">
+        {label}
+      </ThemedText>
+      <View style={styles.stepper}>
+        <Pressable
+          onPress={() => update(-1)}
+          accessibilityRole="button"
+          accessibilityLabel={`Decrease ${label}`}
+          style={({ pressed }) => [
+            styles.stepButton,
+            {
+              borderColor: theme.border,
+              backgroundColor: pressed ? theme.backgroundSelected : theme.backgroundElement,
+            },
+          ]}>
+          <ThemedText type="smallBold">−</ThemedText>
+        </Pressable>
+        <ThemedText type="heading" style={styles.numberValue}>
+          {amount}
+        </ThemedText>
+        <Pressable
+          onPress={() => update(1)}
+          accessibilityRole="button"
+          accessibilityLabel={`Increase ${label}`}
+          style={({ pressed }) => [
+            styles.stepButton,
+            {
+              borderColor: theme.border,
+              backgroundColor: pressed ? theme.backgroundSelected : theme.backgroundElement,
+            },
+          ]}>
+          <ThemedText type="smallBold">+</ThemedText>
+        </Pressable>
+      </View>
+      {error === null || error === undefined ? null : (
+        <ThemedText type="small" themeColor="danger">
+          {error}
+        </ThemedText>
+      )}
+    </View>
   );
 }
 
@@ -148,9 +244,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.three,
   },
-  actions: {
+  toolbar: {
+    minHeight: 64,
     flexDirection: 'row',
-    gap: Spacing.three,
-    paddingTop: Spacing.two,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.three,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  numberField: {
+    flex: 1,
+    gap: Spacing.two,
+  },
+  stepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  stepButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radii.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  numberValue: {
+    minWidth: 28,
+    textAlign: 'center',
+  },
+  actions: {
+    paddingTop: Spacing.one,
   },
 });

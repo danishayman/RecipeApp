@@ -107,6 +107,7 @@ export default function RecipeDetailScreen() {
         <RecipeForm
           initialValues={formValuesFrom(recipe)}
           submitLabel="Save changes"
+          title="Edit recipe"
           onSubmit={handleSave}
           onCancel={() => setIsEditing(false)}
         />
@@ -115,6 +116,7 @@ export default function RecipeDetailScreen() {
           recipe={recipe}
           onEdit={() => setIsEditing(true)}
           onDelete={confirmDelete}
+          onBack={goBack}
         />
       )}
     </ThemedView>

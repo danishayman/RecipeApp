@@ -28,11 +28,7 @@ export function SearchField({
   const hasValue = value.length > 0;
 
   return (
-    <View
-      style={[
-        styles.field,
-        { backgroundColor: theme.backgroundElement, borderColor: theme.border },
-      ]}>
+    <View style={[styles.field, { borderColor: theme.border }]}>
       <SearchGlyph color={theme.textSecondary} />
 
       <TextInput
@@ -88,14 +84,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
-    minHeight: 52,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Radii.medium,
-    borderWidth: StyleSheet.hairlineWidth,
+    minHeight: 42,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   input: {
     flex: 1,
-    paddingVertical: Spacing.two,
+    paddingVertical: Spacing.one,
     fontFamily: Fonts.sans,
     fontSize: 15,
   },

@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { RecipeImage } from '@/components/recipe-image';
 import { ThemedText } from '@/components/themed-text';
 import { Radii, Spacing } from '@/constants/theme';
 import { PermissionDeniedError, useImagePicker } from '@/hooks/use-image-picker';
+import { useTheme } from '@/hooks/use-theme';
 
 interface PhotoFieldProps {
   label: string;
@@ -23,6 +24,7 @@ interface PhotoFieldProps {
  * the result into permanent storage all live in `useImagePicker`.
  */
 export function PhotoField({ label, value, onChange, typeId }: PhotoFieldProps) {
+  const theme = useTheme();
   const handlePicked = useCallback((uri: string) => onChange(uri), [onChange]);
 
   const handleError = useCallback((error: Error) => {
@@ -45,13 +47,34 @@ export function PhotoField({ label, value, onChange, typeId }: PhotoFieldProps) 
         {label}
       </ThemedText>
 
-      <RecipeImage
-        uri={value}
-        typeId={typeId}
-        emojiSize={56}
-        style={styles.preview}
-        accessibilityLabel={value === null ? 'No photo chosen yet' : 'Chosen recipe photo'}
-      />
+      {value === null ? (
+        <Pressable
+          onPress={() => pick('library')}
+          accessibilityRole="button"
+          accessibilityLabel="Choose a recipe photo"
+          style={({ pressed }) => [
+            styles.emptyPreview,
+            {
+              borderColor: theme.border,
+              backgroundColor: pressed ? theme.backgroundSelected : 'transparent',
+            },
+          ]}>
+          <ThemedText type="subtitle" style={{ color: theme.accentStrong }}>
+            +
+          </ThemedText>
+          <ThemedText type="label" themeColor="textSecondary">
+            Take or choose a photo
+          </ThemedText>
+        </Pressable>
+      ) : (
+        <RecipeImage
+          uri={value}
+          typeId={typeId}
+          emojiSize={56}
+          style={styles.preview}
+          accessibilityLabel="Chosen recipe photo"
+        />
+      )}
 
       <View style={styles.actions}>
         <AppButton
@@ -60,6 +83,7 @@ export function PhotoField({ label, value, onChange, typeId }: PhotoFieldProps) 
           onPress={() => pick('camera')}
           busy={isPicking}
           style={styles.action}
+          labelCase="caps"
         />
         <AppButton
           label="Choose photo"
@@ -67,6 +91,7 @@ export function PhotoField({ label, value, onChange, typeId }: PhotoFieldProps) 
           onPress={() => pick('library')}
           busy={isPicking}
           style={styles.action}
+          labelCase="caps"
         />
       </View>
 
@@ -90,6 +115,16 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 4 / 3,
     borderRadius: Radii.medium,
+  },
+  emptyPreview: {
+    width: '100%',
+    aspectRatio: 4 / 3,
+    borderRadius: Radii.medium,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
   },
   actions: {
     flexDirection: 'row',

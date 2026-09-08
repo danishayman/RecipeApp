@@ -29,7 +29,7 @@ export function RecipeCard({ recipe, onPress, layout = 'row' }: RecipeCardProps)
   const { labelFor } = useRecipeTypes();
   const isTile = layout === 'tile';
 
-  const meta = `${labelFor(recipe.typeId)} · ${recipe.prepMinutes} min · serves ${recipe.servings}`;
+  const category = labelFor(recipe.typeId);
 
   return (
     <Pressable
@@ -56,17 +56,28 @@ export function RecipeCard({ recipe, onPress, layout = 'row' }: RecipeCardProps)
         <ThemedText type={isTile ? 'headingSmall' : 'heading'} numberOfLines={2}>
           {recipe.title}
         </ThemedText>
-
-        <ThemedText type="meta" themeColor="textSecondary" numberOfLines={1}>
-          {meta}
+        <ThemedText type="meta" style={{ color: theme.accentStrong }} numberOfLines={1}>
+          {category}
         </ThemedText>
 
         {recipe.description.length > 0 ? (
-          <ThemedText type="small" themeColor="textSecondary" numberOfLines={2}>
+          <ThemedText type="small" themeColor="textSecondary" numberOfLines={isTile ? 2 : 2}>
             {recipe.description}
           </ThemedText>
         ) : null}
       </View>
+
+      {isTile ? null : (
+        <View style={styles.time}>
+          <ThemedText type="heading">{recipe.prepMinutes}</ThemedText>
+          <ThemedText type="meta" themeColor="textSecondary">
+            min
+          </ThemedText>
+          <ThemedText type="meta" themeColor="textSecondary">
+            ×{recipe.servings}
+          </ThemedText>
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -89,8 +100,8 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
   },
   thumbnail: {
-    width: 64,
-    height: 64,
+    width: 68,
+    height: 68,
     borderRadius: Radii.small,
   },
   cover: {
@@ -104,6 +115,11 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     gap: Spacing.one,
+  },
+  time: {
+    width: 32,
+    alignItems: 'flex-end',
+    gap: 0,
   },
   tileBody: {
     gap: Spacing.one,

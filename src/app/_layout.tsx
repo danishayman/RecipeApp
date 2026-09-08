@@ -1,12 +1,11 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Alert, Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { useColorScheme } from 'react-native';
 
 import { AppErrorBoundary } from '@/components/app-error-boundary';
-import { ThemedText } from '@/components/themed-text';
-import { Colors, Fonts, Radii, Spacing } from '@/constants/theme';
+import { Colors, Fonts } from '@/constants/theme';
 import { AuthProvider, useAuth } from '@/state/auth-provider';
 import { RecipesProvider } from '@/state/recipes-provider';
 
@@ -83,13 +82,13 @@ function RootNavigator() {
         <Stack.Screen
           name="index"
           options={{
-            title: 'Recipes',
-            headerLeft: () => <SignOutAction />,
-            headerRight: () => <AddRecipeAction />,
+            // The listing owns its masthead so the product mark, title and
+            // actions read as one editorial block rather than system chrome.
+            headerShown: false,
           }}
         />
-        <Stack.Screen name="add" options={{ title: 'New recipe' }} />
-        <Stack.Screen name="recipe/[id]" options={{ title: 'Recipe' }} />
+        <Stack.Screen name="add" options={{ headerShown: false }} />
+        <Stack.Screen name="recipe/[id]" options={{ headerShown: false }} />
       </Stack.Protected>
 
       <Stack.Protected guard={!isSignedIn}>
@@ -98,70 +97,3 @@ function RootNavigator() {
     </Stack>
   );
 }
-
-/** Header action on the listing screen that opens the add form. */
-function AddRecipeAction() {
-  const router = useRouter();
-  const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
-  const palette = Colors[scheme];
-
-  return (
-    <Pressable
-      onPress={() => router.push('/add')}
-      accessibilityRole="button"
-      accessibilityLabel="Add a recipe"
-      accessibilityHint="Opens the form for a new recipe"
-      hitSlop={Spacing.two}
-      style={({ pressed }) => [
-        styles.headerAction,
-        { backgroundColor: palette.accent, opacity: pressed ? 0.8 : 1 },
-      ]}>
-      <ThemedText type="label" style={{ color: palette.onAccent }}>
-        + Add
-      </ThemedText>
-    </Pressable>
-  );
-}
-
-/** Header action that ends the session, with a confirmation first. */
-function SignOutAction() {
-  const { signOut } = useAuth();
-
-  const confirm = () => {
-    Alert.alert('Sign out?', 'Your recipes stay on this device.', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Sign out',
-        style: 'destructive',
-        onPress: () => {
-          void signOut().catch(() => Alert.alert('Could not sign out', 'Please try again.'));
-        },
-      },
-    ]);
-  };
-
-  return (
-    <Pressable
-      onPress={confirm}
-      accessibilityRole="button"
-      accessibilityLabel="Sign out"
-      hitSlop={Spacing.two}
-      style={({ pressed }) => [styles.headerText, { opacity: pressed ? 0.6 : 1 }]}>
-      <ThemedText type="label" themeColor="textSecondary">
-        Sign out
-      </ThemedText>
-    </Pressable>
-  );
-}
-
-const styles = StyleSheet.create({
-  headerAction: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderRadius: Radii.pill,
-  },
-  headerText: {
-    paddingVertical: Spacing.one,
-    paddingRight: Spacing.three,
-  },
-});

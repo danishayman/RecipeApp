@@ -1,6 +1,6 @@
-# RecipeApp
+# YumBook
 
-A React Native recipe manager built with **Expo SDK 57** and **TypeScript**.
+A React Native recipe book built with **Expo SDK 57** and **TypeScript**.
 
 Browse a collection of recipes, filter them by type, add your own with a photo,
 ingredients and method steps, then edit or delete them. Everything is stored
@@ -139,8 +139,7 @@ array rather than refetching on focus.
 
 ### Design language
 
-The look is "Kitchen Note", one of three directions from a Claude Design
-exploration: a warm paper ground, an editorial serif doing the headline work,
+The YumBook look uses a warm paper ground, an editorial serif doing the headline work,
 monospace for every piece of metadata, and hairline-ruled rows rather than
 cards — a recipe box rather than a feed. The ember accent (`#E8590C`) carried
 over from the original palette unchanged; only the neutrals warmed up.
@@ -273,7 +272,7 @@ build tooling differs.
 
 **Seeding is guarded by a separate flag key.** If the seeded marker lived in
 the recipe list itself, a user who deleted every recipe would have the samples
-reappear on the next launch. A dedicated `recipeapp:seeded:v1` key keeps
+reappear on the next launch. A dedicated `yumbook:seeded:v1` key keeps
 "first launch" and "deliberately empty" distinct.
 
 **Picked photos are copied into the document directory.** The image picker

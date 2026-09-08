@@ -17,9 +17,9 @@ import type { Credential, Session } from '@/types/auth';
  * Dots rather than the colons the recipe repository uses: SecureStore only
  * accepts keys matching /^[\w.-]+$/, so a colon throws at runtime.
  */
-const ACCOUNTS_KEY = 'recipeapp.auth.accounts.v1';
-const SESSION_KEY = 'recipeapp.auth.session.v1';
-const SEEDED_KEY = 'recipeapp.auth.seeded.v1';
+const ACCOUNTS_KEY = 'yumbook.auth.accounts.v1';
+const SESSION_KEY = 'yumbook.auth.session.v1';
+const SEEDED_KEY = 'yumbook.auth.seeded.v1';
 
 /**
  * The account created on first launch so the app can be signed into without

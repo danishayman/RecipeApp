@@ -15,8 +15,8 @@ import type { Recipe } from '@/types/recipe';
  * Storage keys are namespaced and versioned. Bumping the version is how a
  * future schema change would opt out of stale data rather than crash on it.
  */
-const RECIPES_KEY = 'recipeapp:recipes:v1';
-const SEEDED_KEY = 'recipeapp:seeded:v1';
+const RECIPES_KEY = 'yumbook:recipes:v1';
+const SEEDED_KEY = 'yumbook:seeded:v1';
 
 /** Raised when device storage is unreadable or unwritable. */
 export class RecipeStorageError extends Error {

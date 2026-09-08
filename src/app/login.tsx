@@ -1,5 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/app-button';
@@ -101,12 +108,15 @@ export default function LoginScreen() {
           ]}
           keyboardShouldPersistTaps="handled">
           <View style={styles.heading}>
-            <ThemedText style={styles.mark}>🍳</ThemedText>
-            <ThemedText type="subtitle">RecipeApp</ThemedText>
+            <ThemedText type="label" style={{ color: theme.accentStrong }}>
+              Kitchen note
+            </ThemedText>
+            <ThemedText type="subtitle">YumBook</ThemedText>
+            <View style={[styles.accentRule, { backgroundColor: theme.accent }]} />
             <ThemedText themeColor="textSecondary">
               {isRegistering
                 ? 'Create an account to keep your recipes on this device.'
-                : 'Sign in to get to your recipes.'}
+                : 'Sign in to return to your recipes. Everything stays on this device.'}
             </ThemedText>
           </View>
 
@@ -120,6 +130,7 @@ export default function LoginScreen() {
             autoCorrect={false}
             autoComplete="username"
             returnKeyType="next"
+            variant="ruled"
           />
 
           <TextField
@@ -134,6 +145,7 @@ export default function LoginScreen() {
             autoComplete={isRegistering ? 'new-password' : 'current-password'}
             returnKeyType="go"
             onSubmitEditing={submit}
+            variant="ruled"
           />
 
           {failure === null ? null : (
@@ -150,12 +162,21 @@ export default function LoginScreen() {
             busy={isPending}
           />
 
-          <AppButton
-            label={isRegistering ? 'I already have an account' : 'Create an account instead'}
-            variant="secondary"
+          <Pressable
             onPress={switchMode}
             disabled={isPending}
-          />
+            accessibilityRole="button"
+            accessibilityLabel={
+              isRegistering ? 'I already have an account' : 'Create an account instead'
+            }
+            style={({ pressed }) => [
+              styles.switchMode,
+              { opacity: isPending ? 0.5 : pressed ? 0.65 : 1 },
+            ]}>
+            <ThemedText type="label" style={{ color: theme.accentStrong }}>
+              {isRegistering ? 'I already have an account' : 'Create an account instead'}
+            </ThemedText>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </ThemedView>
@@ -173,20 +194,26 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     padding: Spacing.four,
-    gap: Spacing.three,
+    gap: Spacing.four,
   },
   heading: {
-    alignItems: 'center',
-    gap: Spacing.two,
-    paddingBottom: Spacing.three,
+    alignItems: 'flex-start',
+    gap: Spacing.one,
+    paddingBottom: Spacing.two,
   },
-  mark: {
-    fontSize: 56,
-    lineHeight: 66,
+  accentRule: {
+    width: 48,
+    height: 1,
+    marginVertical: Spacing.one,
   },
   failure: {
     padding: Spacing.three,
     borderRadius: Radii.medium,
     borderWidth: StyleSheet.hairlineWidth,
+  },
+  switchMode: {
+    minHeight: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

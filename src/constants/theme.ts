@@ -1,5 +1,5 @@
 /**
- * Design tokens for the Recipe app.
+ * Design tokens for YumBook.
  *
  * Every colour is declared for both light and dark schemes so that
  * `useTheme()` can return a single palette object for the active scheme.
@@ -11,7 +11,7 @@ import '@/global.css';
 import { Platform } from 'react-native';
 
 /**
- * The "Kitchen Note" palette: a warm paper ground, near-black ink, and the
+ * The YumBook palette: a warm paper ground, near-black ink, and the
  * ember accent the app already used.
  *
  * Light is taken from the design directly. Dark is derived - the direction

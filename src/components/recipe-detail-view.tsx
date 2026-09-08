@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/app-button';
 import { RecipeImage } from '@/components/recipe-image';
 import { ThemedText } from '@/components/themed-text';
 import { MaxContentWidth, Radii, Spacing } from '@/constants/theme';
-import { useLayout } from '@/hooks/use-layout';
 import { useRecipeTypes } from '@/hooks/use-recipe-types';
 import { useTheme } from '@/hooks/use-theme';
 import type { Recipe } from '@/types/recipe';
@@ -15,6 +15,7 @@ interface RecipeDetailViewProps {
   recipe: Recipe;
   onEdit: () => void;
   onDelete: () => void;
+  onBack: () => void;
 }
 
 /**
@@ -23,26 +24,33 @@ interface RecipeDetailViewProps {
  * Purely presentational: the route above it owns the recipe, the edit toggle
  * and the delete confirmation.
  *
- * On a wide landscape window the photo sits beside the text rather than above
- * it, so the method is readable without scrolling past a full-width image.
+ * The image leads the page, with the ingredients and method on a paper panel
+ * that rises over it like a physical recipe card.
  */
-export function RecipeDetailView({ recipe, onEdit, onDelete }: RecipeDetailViewProps) {
+export function RecipeDetailView({ recipe, onEdit, onDelete, onBack }: RecipeDetailViewProps) {
   const theme = useTheme();
   const { labelFor } = useRecipeTypes();
   const insets = useSafeAreaInsets();
-  const { isWide, isLandscape } = useLayout();
-  const isSplit = isWide && isLandscape;
+  const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(() => new Set());
+
+  const toggleIngredient = (index: number) => {
+    setCheckedIngredients((current) => {
+      const next = new Set(current);
+
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+
+      return next;
+    });
+  };
 
   return (
-    <ScrollView
-      contentContainerStyle={[
-        styles.content,
-        // Keep the action row clear of the home indicator or navigation bar.
-        { paddingBottom: insets.bottom + Spacing.four },
-        isSplit && styles.contentWide,
-      ]}>
-      <View style={isSplit ? styles.split : styles.stack}>
-        <View style={isSplit ? styles.splitMedia : undefined}>
+    <View style={styles.page}>
+      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 88 }}>
+        <View style={styles.heroWrap}>
           <RecipeImage
             uri={recipe.imageUri}
             typeId={recipe.typeId}
@@ -50,35 +58,85 @@ export function RecipeDetailView({ recipe, onEdit, onDelete }: RecipeDetailViewP
             style={styles.hero}
             accessibilityLabel={`Photo of ${recipe.title}`}
           />
+          <Pressable
+            onPress={onBack}
+            accessibilityRole="button"
+            accessibilityLabel="Back to recipes"
+            style={({ pressed }) => [
+              styles.backButton,
+              { backgroundColor: pressed ? 'rgba(31, 27, 22, 0.72)' : 'rgba(31, 27, 22, 0.56)' },
+            ]}>
+            <ThemedText style={styles.backArrow}>←</ThemedText>
+          </Pressable>
         </View>
 
-        <View style={[styles.stack, isSplit && styles.splitText]}>
+        <View
+          style={[
+            styles.detailPanel,
+            { backgroundColor: theme.background, borderColor: theme.border },
+          ]}>
           <View style={styles.headingBlock}>
-            <ThemedText type="subtitle">{recipe.title}</ThemedText>
-
-            <ThemedText type="meta" themeColor="textSecondary">
-              {labelFor(recipe.typeId)} · {recipe.prepMinutes} min · serves {recipe.servings}
+            <ThemedText type="label" style={{ color: theme.accentStrong }}>
+              {labelFor(recipe.typeId)}
             </ThemedText>
+            <ThemedText type="subtitle">{recipe.title}</ThemedText>
 
             {recipe.description.length > 0 ? (
               <ThemedText themeColor="textSecondary">{recipe.description}</ThemedText>
             ) : null}
+            <View style={[styles.recipeFacts, { borderColor: theme.border }]}>
+              <Fact value={recipe.prepMinutes} label="Minutes" />
+              <Fact value={recipe.servings} label="Serves" />
+              <Fact value={recipe.steps.length} label="Steps" />
+            </View>
           </View>
 
           <DetailSection title="Ingredients">
-            {recipe.ingredients.map((ingredient, index) => (
-              <View key={`${index}-${ingredient}`} style={styles.listRow}>
-                <ThemedText themeColor="textSecondary">•</ThemedText>
-                <ThemedText style={styles.growingText}>{ingredient}</ThemedText>
-              </View>
-            ))}
+            {recipe.ingredients.map((ingredient, index) => {
+              const isChecked = checkedIngredients.has(index);
+
+              return (
+                <Pressable
+                  key={`${index}-${ingredient}`}
+                  onPress={() => toggleIngredient(index)}
+                  accessibilityRole="checkbox"
+                  accessibilityLabel={ingredient}
+                  accessibilityState={{ checked: isChecked }}
+                  style={({ pressed }) => [
+                    styles.listRow,
+                    { borderBottomColor: theme.border, opacity: pressed ? 0.62 : 1 },
+                  ]}>
+                  <View
+                    style={[
+                      styles.checkBox,
+                      {
+                        backgroundColor: isChecked ? theme.accent : 'transparent',
+                        borderColor: isChecked ? theme.accent : theme.border,
+                      },
+                    ]}>
+                    {isChecked ? (
+                      <ThemedText style={[styles.checkMark, { color: theme.onAccent }]}>
+                        ✓
+                      </ThemedText>
+                    ) : null}
+                  </View>
+                  <ThemedText
+                    style={[styles.growingText, isChecked && styles.completedIngredient]}
+                    themeColor={isChecked ? 'textSecondary' : 'text'}>
+                    {ingredient}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
           </DetailSection>
 
           <DetailSection title="Method">
             {recipe.steps.map((step, index) => (
-              <View key={`${index}-${step}`} style={styles.listRow}>
-                <View style={[styles.ordinal, { backgroundColor: theme.backgroundSelected }]}>
-                  <ThemedText type="meta" themeColor="textSecondary">
+              <View
+                key={`${index}-${step}`}
+                style={[styles.listRow, { borderBottomColor: theme.border }]}>
+                <View style={styles.ordinal}>
+                  <ThemedText type="heading" style={{ color: theme.accentStrong }}>
                     {index + 1}
                   </ThemedText>
                 </View>
@@ -87,23 +145,40 @@ export function RecipeDetailView({ recipe, onEdit, onDelete }: RecipeDetailViewP
             ))}
           </DetailSection>
         </View>
+      </ScrollView>
+      <View
+        style={[
+          styles.actionBar,
+          { backgroundColor: theme.background, borderTopColor: theme.border },
+        ]}>
+        <View style={styles.actions}>
+          <AppButton
+            label="Edit recipe"
+            onPress={onEdit}
+            style={styles.growingText}
+            accessibilityHint="Makes every field editable"
+          />
+          <AppButton
+            label="Delete"
+            variant="secondary"
+            labelCase="caps"
+            onPress={onDelete}
+            accessibilityHint="Removes this recipe permanently"
+          />
+        </View>
       </View>
+    </View>
+  );
+}
 
-      <View style={styles.actions}>
-        <AppButton
-          label="Edit recipe"
-          onPress={onEdit}
-          style={styles.growingText}
-          accessibilityHint="Makes every field editable"
-        />
-        <AppButton
-          label="Delete"
-          variant="danger"
-          onPress={onDelete}
-          accessibilityHint="Removes this recipe permanently"
-        />
-      </View>
-    </ScrollView>
+function Fact({ value, label }: { value: number; label: string }) {
+  return (
+    <View style={styles.fact}>
+      <ThemedText type="heading">{value}</ThemedText>
+      <ThemedText type="meta" themeColor="textSecondary">
+        {label}
+      </ThemedText>
+    </View>
   );
 }
 
@@ -125,37 +200,55 @@ function DetailSection({ title, children }: DetailSectionProps) {
 }
 
 const styles = StyleSheet.create({
-  content: {
-    width: '100%',
-    maxWidth: MaxContentWidth,
-    alignSelf: 'center',
-    padding: Spacing.three,
-    gap: Spacing.four,
-  },
-  contentWide: {
-    maxWidth: MaxContentWidth + 200,
-  },
-  stack: {
-    gap: Spacing.four,
+  page: {
     flex: 1,
   },
-  split: {
-    flexDirection: 'row',
-    gap: Spacing.four,
-  },
-  splitMedia: {
-    flex: 2,
-  },
-  splitText: {
-    flex: 3,
+  heroWrap: {
+    position: 'relative',
   },
   hero: {
     width: '100%',
-    aspectRatio: 4 / 3,
-    borderRadius: Radii.small,
+    height: 292,
+  },
+  backButton: {
+    position: 'absolute',
+    top: Spacing.four,
+    left: Spacing.three,
+    width: 40,
+    height: 40,
+    borderRadius: Radii.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backArrow: {
+    color: '#FFFFFF',
+    fontSize: 21,
+    lineHeight: 24,
+  },
+  detailPanel: {
+    maxWidth: MaxContentWidth,
+    alignSelf: 'center',
+    width: '100%',
+    marginTop: -28,
+    padding: Spacing.three,
+    gap: Spacing.four,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopLeftRadius: Radii.large,
+    borderTopRightRadius: Radii.large,
   },
   headingBlock: {
     gap: Spacing.two,
+  },
+  recipeFacts: {
+    flexDirection: 'row',
+    marginTop: Spacing.one,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  fact: {
+    flex: 1,
+    gap: Spacing.half,
+    paddingVertical: Spacing.two,
   },
   section: {
     gap: Spacing.two,
@@ -167,13 +260,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.two,
+    paddingVertical: Spacing.two,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  checkBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginTop: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkMark: {
+    fontSize: 14,
+    lineHeight: 16,
+    fontWeight: '700',
+  },
+  completedIngredient: {
+    textDecorationLine: 'line-through',
   },
   ordinal: {
     width: 24,
-    height: 24,
-    borderRadius: Radii.pill,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   growingText: {
     flex: 1,
@@ -181,5 +290,9 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     gap: Spacing.three,
+  },
+  actionBar: {
+    padding: Spacing.three,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
 });
