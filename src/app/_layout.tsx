@@ -6,7 +6,7 @@ import { Alert, Pressable, StyleSheet, useColorScheme } from 'react-native';
 
 import { AppErrorBoundary } from '@/components/app-error-boundary';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Radii, Spacing } from '@/constants/theme';
+import { Colors, Fonts, Radii, Spacing } from '@/constants/theme';
 import { AuthProvider, useAuth } from '@/state/auth-provider';
 import { RecipesProvider } from '@/state/recipes-provider';
 
@@ -69,7 +69,14 @@ function RootNavigator() {
       screenOptions={{
         headerStyle: { backgroundColor: palette.background },
         headerTintColor: palette.accent,
-        headerTitleStyle: { color: palette.text },
+        headerTitleStyle: {
+          color: palette.text,
+          // The serif is what makes a screen title read as a heading in this
+          // design rather than as chrome.
+          fontFamily: Fonts.serif,
+          fontSize: 22,
+          fontWeight: '400',
+        },
         contentStyle: { backgroundColor: palette.background },
       }}>
       <Stack.Protected guard={isSignedIn}>
@@ -109,7 +116,7 @@ function AddRecipeAction() {
         styles.headerAction,
         { backgroundColor: palette.accent, opacity: pressed ? 0.8 : 1 },
       ]}>
-      <ThemedText type="smallBold" style={{ color: palette.onAccent }}>
+      <ThemedText type="label" style={{ color: palette.onAccent }}>
         + Add
       </ThemedText>
     </Pressable>
@@ -140,7 +147,7 @@ function SignOutAction() {
       accessibilityLabel="Sign out"
       hitSlop={Spacing.two}
       style={({ pressed }) => [styles.headerText, { opacity: pressed ? 0.6 : 1 }]}>
-      <ThemedText type="smallBold" themeColor="textSecondary">
+      <ThemedText type="label" themeColor="textSecondary">
         Sign out
       </ThemedText>
     </Pressable>
@@ -150,7 +157,7 @@ function SignOutAction() {
 const styles = StyleSheet.create({
   headerAction: {
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.one,
+    paddingVertical: Spacing.two,
     borderRadius: Radii.pill,
   },
   headerText: {

@@ -1,73 +1,100 @@
-import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
+import { StyleSheet, Text, type TextProps } from 'react-native';
 
 import { Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
+/**
+ * The type scale, in three families that each have one job:
+ *
+ * - **serif** carries the headings, and is what gives the app its editorial,
+ *   recipe-box character;
+ * - **mono**, always uppercase and tracked out, carries metadata and field
+ *   labels — anything that reads as annotation rather than prose;
+ * - **sans** carries body copy.
+ *
+ * The design calls for Newsreader, IBM Plex Mono and Spline Sans. These map to
+ * the platform's own serif, monospace and sans faces via `Fonts`, so the app
+ * needs no font files; swapping in the real families later is a change to
+ * `Fonts` alone.
+ */
+export type ThemedTextType =
+  | 'default'
+  | 'small'
+  | 'smallBold'
+  | 'subtitle'
+  | 'heading'
+  | 'headingSmall'
+  | 'label'
+  | 'meta';
+
 export type ThemedTextProps = TextProps & {
-  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
+  type?: ThemedTextType;
   themeColor?: ThemeColor;
 };
 
 export function ThemedText({ style, type = 'default', themeColor, ...rest }: ThemedTextProps) {
   const theme = useTheme();
 
-  return (
-    <Text
-      style={[
-        { color: theme[themeColor ?? 'text'] },
-        type === 'default' && styles.default,
-        type === 'title' && styles.title,
-        type === 'small' && styles.small,
-        type === 'smallBold' && styles.smallBold,
-        type === 'subtitle' && styles.subtitle,
-        type === 'link' && styles.link,
-        type === 'linkPrimary' && styles.linkPrimary,
-        type === 'code' && styles.code,
-        style,
-      ]}
-      {...rest}
-    />
-  );
+  return <Text style={[{ color: theme[themeColor ?? 'text'] }, styles[type], style]} {...rest} />;
 }
 
 const styles = StyleSheet.create({
+  // Sans — body copy.
+  default: {
+    fontFamily: Fonts.sans,
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '400',
+  },
   small: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 500,
+    fontFamily: Fonts.sans,
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: '400',
   },
   smallBold: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 700,
+    fontFamily: Fonts.sans,
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: '600',
   },
-  default: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: 500,
-  },
-  title: {
-    fontSize: 48,
-    fontWeight: 600,
-    lineHeight: 52,
-  },
+
+  // Serif — headings.
   subtitle: {
+    fontFamily: Fonts.serif,
     fontSize: 32,
-    lineHeight: 44,
-    fontWeight: 600,
+    lineHeight: 38,
+    fontWeight: '400',
   },
-  link: {
-    lineHeight: 30,
-    fontSize: 14,
+  heading: {
+    fontFamily: Fonts.serif,
+    fontSize: 19,
+    lineHeight: 24,
+    fontWeight: '500',
   },
-  linkPrimary: {
-    lineHeight: 30,
-    fontSize: 14,
-    color: '#3c87f7',
+  headingSmall: {
+    fontFamily: Fonts.serif,
+    fontSize: 15,
+    lineHeight: 19,
+    fontWeight: '500',
   },
-  code: {
+
+  // Mono — metadata and field labels. Uppercase and tracking are part of the
+  // variant so call sites never have to remember them.
+  label: {
     fontFamily: Fonts.mono,
-    fontWeight: Platform.select({ android: 700 }) ?? 500,
-    fontSize: 12,
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: '500',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  meta: {
+    fontFamily: Fonts.mono,
+    fontSize: 10.5,
+    lineHeight: 15,
+    fontWeight: '500',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
 });

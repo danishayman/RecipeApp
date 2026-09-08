@@ -56,16 +56,9 @@ export function RecipeDetailView({ recipe, onEdit, onDelete }: RecipeDetailViewP
           <View style={styles.headingBlock}>
             <ThemedText type="subtitle">{recipe.title}</ThemedText>
 
-            <View style={styles.metaRow}>
-              <View style={[styles.chip, { backgroundColor: theme.backgroundSelected }]}>
-                <ThemedText type="small" themeColor="textSecondary">
-                  {labelFor(recipe.typeId)}
-                </ThemedText>
-              </View>
-              <ThemedText type="small" themeColor="textSecondary">
-                {recipe.prepMinutes} min · serves {recipe.servings}
-              </ThemedText>
-            </View>
+            <ThemedText type="meta" themeColor="textSecondary">
+              {labelFor(recipe.typeId)} · {recipe.prepMinutes} min · serves {recipe.servings}
+            </ThemedText>
 
             {recipe.description.length > 0 ? (
               <ThemedText themeColor="textSecondary">{recipe.description}</ThemedText>
@@ -85,7 +78,7 @@ export function RecipeDetailView({ recipe, onEdit, onDelete }: RecipeDetailViewP
             {recipe.steps.map((step, index) => (
               <View key={`${index}-${step}`} style={styles.listRow}>
                 <View style={[styles.ordinal, { backgroundColor: theme.backgroundSelected }]}>
-                  <ThemedText type="smallBold" themeColor="textSecondary">
+                  <ThemedText type="meta" themeColor="textSecondary">
                     {index + 1}
                   </ThemedText>
                 </View>
@@ -123,7 +116,7 @@ interface DetailSectionProps {
 function DetailSection({ title, children }: DetailSectionProps) {
   return (
     <View style={styles.section}>
-      <ThemedText type="smallBold" themeColor="textSecondary" style={styles.sectionTitle}>
+      <ThemedText type="label" themeColor="textSecondary">
         {title}
       </ThemedText>
       <View style={styles.sectionBody}>{children}</View>
@@ -159,28 +152,13 @@ const styles = StyleSheet.create({
   hero: {
     width: '100%',
     aspectRatio: 4 / 3,
-    borderRadius: Radii.large,
+    borderRadius: Radii.small,
   },
   headingBlock: {
     gap: Spacing.two,
   },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-  },
-  chip: {
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.half,
-    borderRadius: Radii.pill,
-  },
   section: {
     gap: Spacing.two,
-  },
-  sectionTitle: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   sectionBody: {
     gap: Spacing.two,

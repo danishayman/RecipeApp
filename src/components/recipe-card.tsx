@@ -8,9 +8,11 @@ import { useTheme } from '@/hooks/use-theme';
 import type { Recipe } from '@/types/recipe';
 
 /**
- * `row` places the thumbnail beside the text and suits a single column on a
- * phone. `tile` stacks a wide photo above the text and suits a grid on a
- * tablet or a landscape phone.
+ * `row` is the recipe-box entry: a square thumbnail beside serif type, ruled
+ * off from the next row rather than boxed. It is what a phone sees.
+ *
+ * `tile` keeps a bordered card for the tablet grid, where rules alone would not
+ * separate columns.
  */
 export type RecipeCardLayout = 'row' | 'tile';
 
@@ -27,6 +29,8 @@ export function RecipeCard({ recipe, onPress, layout = 'row' }: RecipeCardProps)
   const { labelFor } = useRecipeTypes();
   const isTile = layout === 'tile';
 
+  const meta = `${labelFor(recipe.typeId)} · ${recipe.prepMinutes} min · serves ${recipe.servings}`;
+
   return (
     <Pressable
       onPress={onPress}
@@ -35,86 +39,75 @@ export function RecipeCard({ recipe, onPress, layout = 'row' }: RecipeCardProps)
       accessibilityLabel={`${recipe.title}, ${labelFor(recipe.typeId)}`}
       accessibilityHint={onPress === undefined ? undefined : 'Opens the full recipe'}
       style={({ pressed }) => [
-        styles.card,
-        isTile ? styles.cardTile : styles.cardRow,
-        {
-          backgroundColor: pressed ? theme.backgroundSelected : theme.backgroundElement,
-          borderColor: theme.border,
-        },
+        isTile ? styles.tile : styles.row,
+        isTile
+          ? { backgroundColor: theme.backgroundElement, borderColor: theme.border }
+          : { borderBottomColor: theme.border },
+        pressed && { backgroundColor: theme.backgroundSelected },
       ]}>
       <RecipeImage
         uri={recipe.imageUri}
         typeId={recipe.typeId}
-        emojiSize={isTile ? 48 : 34}
+        emojiSize={isTile ? 40 : 26}
         style={isTile ? styles.cover : styles.thumbnail}
       />
 
-      <View style={styles.body}>
-        <ThemedText type="smallBold" numberOfLines={2}>
+      <View style={isTile ? styles.tileBody : styles.body}>
+        <ThemedText type={isTile ? 'headingSmall' : 'heading'} numberOfLines={2}>
           {recipe.title}
         </ThemedText>
 
-        <View style={[styles.chip, { backgroundColor: theme.backgroundSelected }]}>
-          <ThemedText type="small" themeColor="textSecondary">
-            {labelFor(recipe.typeId)}
-          </ThemedText>
-        </View>
+        <ThemedText type="meta" themeColor="textSecondary" numberOfLines={1}>
+          {meta}
+        </ThemedText>
 
         {recipe.description.length > 0 ? (
           <ThemedText type="small" themeColor="textSecondary" numberOfLines={2}>
             {recipe.description}
           </ThemedText>
         ) : null}
-
-        <ThemedText type="small" themeColor="textSecondary">
-          {recipe.prepMinutes} min · serves {recipe.servings} · {ingredientCount(recipe)}
-        </ThemedText>
       </View>
     </Pressable>
   );
 }
 
-/** Pluralised ingredient count, so a one-item recipe does not read "1 ingredients". */
-function ingredientCount(recipe: Recipe): string {
-  const count = recipe.ingredients.length;
-  return `${count} ${count === 1 ? 'ingredient' : 'ingredients'}`;
-}
-
 const styles = StyleSheet.create({
-  card: {
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.three,
+    paddingVertical: Spacing.three,
+    // The rule between entries carries the separation, so the list itself
+    // renders no gap between rows.
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  tile: {
+    flexDirection: 'column',
+    gap: Spacing.two,
+    padding: Spacing.two,
     borderRadius: Radii.medium,
     borderWidth: StyleSheet.hairlineWidth,
-    padding: Spacing.two,
-    gap: Spacing.three,
-  },
-  cardRow: {
-    flexDirection: 'row',
-  },
-  cardTile: {
-    flexDirection: 'column',
   },
   thumbnail: {
-    width: 92,
-    height: 92,
+    width: 64,
+    height: 64,
     borderRadius: Radii.small,
   },
   cover: {
     width: '100%',
-    aspectRatio: 16 / 9,
-    // Without a ceiling, a wide tile on a landscape phone grows tall enough
-    // to push the title off screen.
-    maxHeight: 180,
+    aspectRatio: 1,
+    // Without a ceiling a wide tile grows tall enough to push the title off
+    // screen on a short window.
+    maxHeight: 200,
     borderRadius: Radii.small,
   },
   body: {
     flex: 1,
     gap: Spacing.one,
-    paddingVertical: Spacing.half,
   },
-  chip: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.half,
-    borderRadius: Radii.pill,
+  tileBody: {
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.half,
+    paddingBottom: Spacing.one,
   },
 });

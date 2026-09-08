@@ -18,7 +18,7 @@ export function EmptyState({ emoji, title, message, action }: EmptyStateProps) {
   return (
     <View style={styles.container}>
       <ThemedText style={styles.emoji}>{emoji}</ThemedText>
-      <ThemedText type="smallBold" style={styles.centered}>
+      <ThemedText type="heading" style={styles.centered}>
         {title}
       </ThemedText>
       <ThemedText type="small" themeColor="textSecondary" style={styles.centered}>

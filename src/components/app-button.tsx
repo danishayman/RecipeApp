@@ -73,9 +73,7 @@ export function AppButton({
       {busy ? (
         <ActivityIndicator color={foreground} />
       ) : (
-        <ThemedText type="smallBold" style={{ color: foreground }}>
-          {label}
-        </ThemedText>
+        <ThemedText style={[styles.label, { color: foreground }]}>{label}</ThemedText>
       )}
     </Pressable>
   );
@@ -83,13 +81,19 @@ export function AppButton({
 
 const styles = StyleSheet.create({
   button: {
-    // 48pt keeps the control above the recommended minimum touch target.
-    minHeight: 48,
+    // 52pt keeps the control well above the recommended minimum touch target.
+    minHeight: 52,
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
-    borderRadius: Radii.medium,
+    // Pills, matching the rounded controls the design uses throughout.
+    borderRadius: Radii.pill,
     borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  label: {
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '600',
   },
 });

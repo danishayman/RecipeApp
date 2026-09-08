@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Radii, Spacing } from '@/constants/theme';
+import { Fonts, Radii, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 interface DynamicListFieldProps {
@@ -46,7 +46,7 @@ export function DynamicListField({
 
   return (
     <View style={styles.container}>
-      <ThemedText type="smallBold" themeColor="textSecondary" style={styles.label}>
+      <ThemedText type="label" themeColor="textSecondary">
         {label}
       </ThemedText>
 
@@ -54,7 +54,7 @@ export function DynamicListField({
         <View key={index} style={styles.row}>
           {ordered ? (
             <View style={[styles.ordinal, { backgroundColor: theme.backgroundSelected }]}>
-              <ThemedText type="small" themeColor="textSecondary">
+              <ThemedText type="meta" themeColor="textSecondary">
                 {index + 1}
               </ThemedText>
             </View>
@@ -101,9 +101,9 @@ export function DynamicListField({
         accessibilityLabel={addLabel}
         style={({ pressed }) => [
           styles.add,
-          { borderColor: theme.accent, opacity: pressed ? 0.7 : 1 },
+          { borderColor: theme.accentStrong, opacity: pressed ? 0.7 : 1 },
         ]}>
-        <ThemedText type="smallBold" style={{ color: theme.accent }}>
+        <ThemedText type="label" style={{ color: theme.accentStrong }}>
           + {addLabel}
         </ThemedText>
       </Pressable>
@@ -121,10 +121,6 @@ const styles = StyleSheet.create({
   container: {
     gap: Spacing.two,
   },
-  label: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
   row: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -132,24 +128,25 @@ const styles = StyleSheet.create({
   },
   ordinal: {
     width: 28,
-    height: 48,
+    height: 52,
     borderRadius: Radii.small,
     alignItems: 'center',
     justifyContent: 'center',
   },
   input: {
     flex: 1,
-    minHeight: 48,
+    minHeight: 52,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     borderRadius: Radii.medium,
     borderWidth: StyleSheet.hairlineWidth,
-    fontSize: 16,
+    fontFamily: Fonts.sans,
+    fontSize: 15,
     textAlignVertical: 'top',
   },
   remove: {
-    width: 48,
-    height: 48,
+    width: 52,
+    height: 52,
     borderRadius: Radii.medium,
     borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',

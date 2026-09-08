@@ -41,7 +41,7 @@ export function RecipeTypePicker({
 
   return (
     <View style={styles.container}>
-      <ThemedText type="smallBold" themeColor="textSecondary" style={styles.label}>
+      <ThemedText type="label" themeColor="textSecondary">
         {label}
       </ThemedText>
 
@@ -84,10 +84,6 @@ export function RecipeTypePicker({
 const styles = StyleSheet.create({
   container: {
     gap: Spacing.one,
-  },
-  label: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   field: {
     borderWidth: StyleSheet.hairlineWidth,

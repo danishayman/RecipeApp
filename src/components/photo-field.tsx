@@ -41,7 +41,7 @@ export function PhotoField({ label, value, onChange, typeId }: PhotoFieldProps) 
 
   return (
     <View style={styles.container}>
-      <ThemedText type="smallBold" themeColor="textSecondary" style={styles.label}>
+      <ThemedText type="label" themeColor="textSecondary">
         {label}
       </ThemedText>
 
@@ -85,10 +85,6 @@ export function PhotoField({ label, value, onChange, typeId }: PhotoFieldProps) 
 const styles = StyleSheet.create({
   container: {
     gap: Spacing.two,
-  },
-  label: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   preview: {
     width: '100%',

@@ -83,7 +83,8 @@ export default function RecipeListScreen() {
           // Keep the last card clear of the home indicator or navigation bar.
           { paddingBottom: insets.bottom + Spacing.four },
         ]}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        // Row cards are ruled off from each other; only the grid needs a gap.
+        ItemSeparatorComponent={isGrid ? () => <View style={styles.separator} /> : undefined}
         ListHeaderComponent={
           <View style={styles.header}>
             <RecipeTypePicker
@@ -93,7 +94,7 @@ export default function RecipeListScreen() {
               includeAllOption
               accessibilityHint="Narrows the list to a single category"
             />
-            <ThemedText type="small" themeColor="textSecondary">
+            <ThemedText type="meta" themeColor="textSecondary">
               {summary}
             </ThemedText>
           </View>

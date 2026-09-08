@@ -160,7 +160,7 @@ export default function LoginScreen() {
 
           {isRegistering ? null : (
             <View style={[styles.hint, { backgroundColor: theme.backgroundElement }]}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
+              <ThemedText type="label" themeColor="textSecondary">
                 Demo account
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">

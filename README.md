@@ -137,6 +137,42 @@ versioned keys, and first-launch seeding. `RecipesProvider` holds the
 collection in memory so the listing, add and detail screens all mutate one
 array rather than refetching on focus.
 
+### Design language
+
+The look is "Kitchen Note", one of three directions from a Claude Design
+exploration: a warm paper ground, an editorial serif doing the headline work,
+monospace for every piece of metadata, and hairline-ruled rows rather than
+cards — a recipe box rather than a feed. The ember accent (`#E8590C`) carried
+over from the original palette unchanged; only the neutrals warmed up.
+
+Three families, each with one job, defined once in `ThemedText`:
+
+| Family | Role                                             | Variants                              |
+| ------ | ------------------------------------------------ | ------------------------------------- |
+| Serif  | headings                                         | `subtitle`, `heading`, `headingSmall` |
+| Mono   | metadata and field labels, uppercase and tracked | `label`, `meta`                       |
+| Sans   | body copy                                        | `default`, `small`, `smallBold`       |
+
+The design names Newsreader, IBM Plex Mono and Spline Sans. These map to the
+platform's own serif, monospace and sans through `Fonts` in
+`constants/theme.ts`, so the app ships no font files; adopting the real
+families later is a change to that one object.
+
+Two colours were adjusted away from the reference, because the reference values
+do not clear WCAG AA and the measured ratios are in the code comments:
+
+- secondary text moved from `#7A7168` to `#766E63` — the original measures
+  4.48:1 on paper, a hair under the 4.5:1 small text needs;
+- button labels on the ember are dark ink (`#2B1000`, 4.98:1) rather than white
+  (3.58:1), which also matches what the dark scheme already did.
+
+A separate `accentStrong` token exists for the accent used _as text_: the accent
+itself only reaches 3.35:1 on paper, fine as a fill but not as words.
+
+The direction also proposed a bottom tab bar and a step-by-step cook mode.
+Both were left out deliberately — this pass changes how the app looks, not what
+it does, so every behaviour verified earlier still holds.
+
 ### Custom hooks
 
 Behaviour that more than one screen needed lives in a hook rather than in a
